@@ -12,17 +12,12 @@
     <a-scene renderer="antialias: true; colorManagement: true"
              loading-screen="dotsColor: #2a8a4a; backgroundColor: #000">
 
-        <!-- Camera + Controllers -->
-        <a-entity id="camera-rig" movement-controls="fly: false; speed: 0.15" position="0 2 4">
-            <a-entity id="camera" camera="active: true" look-controls
+        <!-- Camera -->
+        <a-entity id="camera-rig" position="0 2 4">
+            <a-entity id="camera" camera="active: true" look-controls wasd-controls="acceleration: 30"
                       cursor="rayOrigin: mouse; fuse: false"
                       raycaster="objects: .clickable, .product, .exit-door; far: 30">
             </a-entity>
-            <!-- Meta Quest Controllers -->
-            <a-entity id="left-hand" oculus-touch-controls="hand: left"></a-entity>
-            <a-entity id="right-hand" oculus-touch-controls="hand: right"
-                      laser-controls="hand: right"
-                      raycaster="objects: .clickable, .product, .exit-door; far: 30"></a-entity>
         </a-entity>
 
         <!-- Sky -->

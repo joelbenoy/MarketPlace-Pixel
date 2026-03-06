@@ -101,18 +101,18 @@
     <a-scene renderer="antialias: true; colorManagement: true"
              loading-screen="dotsColor: #00ff64; backgroundColor: #000">
 
-        <!-- Camera + Controllers -->
-        <a-entity id="camera-rig" movement-controls="fly: false; speed: 0.15" position="0 2 8">
-            <a-entity id="camera" camera="active: true" look-controls
+        <!-- Camera -->
+        <a-entity id="camera-rig" position="0 2 8">
+            <a-entity id="camera" camera="active: true" look-controls wasd-controls="acceleration: 30"
                       cursor="rayOrigin: mouse; fuse: false"
                       raycaster="objects: .clickable; far: 30">
             </a-entity>
-            <!-- Meta Quest Controllers -->
-            <a-entity id="left-hand" oculus-touch-controls="hand: left"></a-entity>
-            <a-entity id="right-hand" oculus-touch-controls="hand: right"
-                      laser-controls="hand: right"
-                      raycaster="objects: .clickable; far: 30"></a-entity>
         </a-entity>
+
+        <!-- Assets -->
+        <a-assets>
+            <a-asset-item id="cloud-model" src="Assests/clouds.glb"></a-asset-item>
+        </a-assets>
 
         <!-- Sky -->
         <a-sky color="#87CEEB"></a-sky>
@@ -206,11 +206,11 @@
             <a-box geometry="primitive: box; width: 15; height: 0.4; depth: 13"
                    material="color: #9d2eff" position="0 6.35 0"></a-box>
             <a-text value="CLOTHING STORE" position="0 5.5 6.2" align="center"
-                    color="#ffffff" scale="2.5 2.5 2.5" side="double"></a-text>
+                    color="#ffffff" scale="2.5 2.5 2.5"></a-text>
             <a-text value="👗 Fashion & Apparel" position="0 4.2 6.2" align="center"
-                    color="#ffff00" scale="1.2 1.2 1.2" side="double"></a-text>
+                    color="#ffff00" scale="1.2 1.2 1.2"></a-text>
             <a-text value="WALK IN" position="0 3.5 6.2" align="center"
-                    color="#00ff64" scale="1 1 1" side="double"></a-text>
+                    color="#00ff64" scale="1 1 1"></a-text>
             <a-box geometry="primitive: box; width: 3; height: 4; depth: 0.1"
                    material="color: #00ff64; transparent: true; opacity: 0.15"
                    position="0 2.2 6.3"></a-box>
@@ -239,11 +239,11 @@
             <a-box geometry="primitive: box; width: 13; height: 0.4; depth: 15"
                    material="color: #8B4513" position="0 6.35 0"></a-box>
             <a-text value="FURNITURE STORE" position="-6.2 5.5 0" align="center"
-                    color="#ffffff" scale="2.5 2.5 2.5" rotation="0 90 0" side="double"></a-text>
+                    color="#ffffff" scale="2.5 2.5 2.5" rotation="0 -90 0"></a-text>
             <a-text value="🛋️ Home & Living" position="-6.2 4.2 0" align="center"
-                    color="#ffff00" scale="1.2 1.2 1.2" rotation="0 90 0" side="double"></a-text>
+                    color="#ffff00" scale="1.2 1.2 1.2" rotation="0 -90 0"></a-text>
             <a-text value="WALK IN" position="-6.2 3.5 0" align="center"
-                    color="#00ff64" scale="1 1 1" rotation="0 90 0" side="double"></a-text>
+                    color="#00ff64" scale="1 1 1" rotation="0 -90 0"></a-text>
             <a-box geometry="primitive: box; width: 0.1; height: 4; depth: 3"
                    material="color: #00ff64; transparent: true; opacity: 0.15"
                    position="-6.3 2.2 0"></a-box>
@@ -268,11 +268,11 @@
             <a-box geometry="primitive: box; width: 17; height: 0.4; depth: 15"
                    material="color: #2a2a3a" position="0 6.35 0"></a-box>
             <a-text value="VEHICLE SHOWROOM" position="0 5.5 -7.2" align="center"
-                    color="#ffffff" scale="2.5 2.5 2.5" side="double"></a-text>
+                    color="#ffffff" scale="2.5 2.5 2.5" rotation="0 180 0"></a-text>
             <a-text value="🚗 Cars & Rides" position="0 4.2 -7.2" align="center"
-                    color="#ff4444" scale="1.2 1.2 1.2" side="double"></a-text>
+                    color="#ff4444" scale="1.2 1.2 1.2" rotation="0 180 0"></a-text>
             <a-text value="WALK IN" position="0 3.5 -7.2" align="center"
-                    color="#00ff64" scale="1 1 1" side="double"></a-text>
+                    color="#00ff64" scale="1 1 1" rotation="0 180 0"></a-text>
             <a-box geometry="primitive: box; width: 3.5; height: 4.5; depth: 0.1"
                    material="color: #00ff64; transparent: true; opacity: 0.15"
                    position="0 2.4 -7.3"></a-box>
@@ -293,11 +293,11 @@
             <a-box geometry="primitive: box; width: 13; height: 0.4; depth: 15"
                    material="color: #1a6a2a" position="0 6.35 0"></a-box>
             <a-text value="MISCELLANEOUS" position="6.2 5.5 0" align="center"
-                    color="#ffffff" scale="2.5 2.5 2.5" rotation="0 -90 0" side="double"></a-text>
+                    color="#ffffff" scale="2.5 2.5 2.5" rotation="0 90 0"></a-text>
             <a-text value="🎁 Gadgets & More" position="6.2 4.2 0" align="center"
-                    color="#ffff00" scale="1.2 1.2 1.2" rotation="0 -90 0" side="double"></a-text>
+                    color="#ffff00" scale="1.2 1.2 1.2" rotation="0 90 0"></a-text>
             <a-text value="WALK IN" position="6.2 3.5 0" align="center"
-                    color="#00ff64" scale="1 1 1" rotation="0 -90 0" side="double"></a-text>
+                    color="#00ff64" scale="1 1 1" rotation="0 90 0"></a-text>
             <a-box geometry="primitive: box; width: 0.1; height: 4; depth: 3"
                    material="color: #00ff64; transparent: true; opacity: 0.15"
                    position="6.3 2.2 0"></a-box>
@@ -385,6 +385,95 @@
         <a-entity position="-10 0 -10">
             <a-cylinder geometry="primitive: cylinder; radius: 0.3; height: 3" material="color: #654321" position="0 1.5 0"></a-cylinder>
             <a-sphere geometry="primitive: sphere; radius: 1.8" material="color: #2E8B57" position="0 3.8 0"></a-sphere>
+        </a-entity>
+
+        <!-- Clouds (GLB models) — at ~20 units high (3x building height) -->
+        <a-entity gltf-model="#cloud-model" position="-30 20 -20" scale="5 5 5"></a-entity>
+        <a-entity gltf-model="#cloud-model" position="20 20 -40" scale="7 7 7"></a-entity>
+        <a-entity gltf-model="#cloud-model" position="40 20 10" scale="4 4 4"></a-entity>
+        <a-entity gltf-model="#cloud-model" position="-15 20 35" scale="6 6 6"></a-entity>
+        <a-entity gltf-model="#cloud-model" position="0 20 -60" scale="8 8 8"></a-entity>
+        <a-entity gltf-model="#cloud-model" position="50 20 -30" scale="5 5 5"></a-entity>
+        <a-entity gltf-model="#cloud-model" position="-45 20 0" scale="6 6 6"></a-entity>
+        <a-entity gltf-model="#cloud-model" position="10 20 50" scale="4.5 4.5 4.5"></a-entity>
+        <a-entity gltf-model="#cloud-model" position="-50 20 -50" scale="7 7 7"></a-entity>
+        <a-entity gltf-model="#cloud-model" position="35 20 40" scale="5.5 5.5 5.5"></a-entity>
+
+        <!-- ======= NPCs / People ======= -->
+        <!-- Couple sitting on bench near fountain -->
+        <a-entity position="3.8 0 -6">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 0.8" material="color: #e74c3c" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #ffdbac" position="0 1.2 0"></a-sphere>
+        </a-entity>
+        <a-entity position="4.4 0 -6">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 0.8" material="color: #3498db" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #c68642" position="0 1.2 0"></a-sphere>
+        </a-entity>
+
+        <!-- Person walking on road to Clothing -->
+        <a-entity position="1.2 0 -18">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.4" material="color: #9b59b6" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #ffdbac" position="0 1.55 0"></a-sphere>
+        </a-entity>
+
+        <!-- Group near fountain -->
+        <a-entity position="-3 0 2">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.4" material="color: #2ecc71" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #8d5524" position="0 1.55 0"></a-sphere>
+        </a-entity>
+        <a-entity position="-4 0 2.5">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.2" material="color: #f1c40f" position="0 0.6 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.16" material="color: #ffdbac" position="0 1.35 0"></a-sphere>
+        </a-entity>
+        <a-entity position="-3.5 0 3.3">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.4" material="color: #e67e22" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #c68642" position="0 1.55 0"></a-sphere>
+        </a-entity>
+
+        <!-- Person near Furniture entrance -->
+        <a-entity position="25 0 1.5">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.4" material="color: #1abc9c" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #ffdbac" position="0 1.55 0"></a-sphere>
+        </a-entity>
+
+        <!-- Person on road to Vehicle -->
+        <a-entity position="-0.8 0 20">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.4" material="color: #34495e" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #ffdbac" position="0 1.55 0"></a-sphere>
+        </a-entity>
+
+        <!-- Two people chatting on pathway -->
+        <a-entity position="8 0 -5">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.4" material="color: #e91e63" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #8d5524" position="0 1.55 0"></a-sphere>
+        </a-entity>
+        <a-entity position="8.8 0 -4.5">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.3" material="color: #00bcd4" position="0 0.65 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.17" material="color: #ffdbac" position="0 1.45 0"></a-sphere>
+        </a-entity>
+
+        <!-- Person sitting on south bench -->
+        <a-entity position="-3.5 0 6">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 0.8" material="color: #ff9800" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #c68642" position="0 1.2 0"></a-sphere>
+        </a-entity>
+
+        <!-- Person near Misc store -->
+        <a-entity position="-26 0 -1">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.4" material="color: #673ab7" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #ffdbac" position="0 1.55 0"></a-sphere>
+        </a-entity>
+
+        <!-- Kid near direction sign -->
+        <a-entity position="6.5 0 4">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.15; height: 0.9" material="color: #ff5722" position="0 0.45 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.15" material="color: #ffdbac" position="0 1.05 0"></a-sphere>
+        </a-entity>
+
+        <!-- Person strolling on diagonal path -->
+        <a-entity position="12 0 -12">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.2; height: 1.4" material="color: #795548" position="0 0.7 0"></a-cylinder>
+            <a-sphere geometry="primitive: sphere; radius: 0.18" material="color: #8d5524" position="0 1.55 0"></a-sphere>
         </a-entity>
 
     </a-scene>
