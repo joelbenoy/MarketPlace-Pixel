@@ -1043,12 +1043,14 @@
         /* ===== Building positions (indoor spawn points) ===== */
         const MARKETPLACE_CENTER = '0 2 15';
         const buildingInteriors = {
-            clothing:  { interior: '0 2 -30',  id: 'interior-clothing',  entrance: { x: 0,     z: -28.9 } },
-            furniture: { interior: '30 2 0',   id: 'interior-furniture', entrance: { x: 28.9,  z: 0     } },
-            vehicle:   { interior: '0 2 40',   id: 'interior-vehicle',   entrance: { x: 0,     z: 27.9  } },
-            misc:      { interior: '-30 2 0',  id: 'interior-misc',      entrance: { x: -28.9, z: 0     } }
+            clothing:  { interior: '0 2 -27',  id: 'interior-clothing',  entrance: { x: 0,     z: -28.9 }, exitDoor: { x: 0,   z: -25.2 } },
+            furniture: { interior: '35 2 9',   id: 'interior-furniture', entrance: { x: 28.9,  z: 0     }, exitDoor: { x: 35,  z: 10.8  } },
+            vehicle:   { interior: '0 2 44',   id: 'interior-vehicle',   entrance: { x: 0,     z: 27.9  }, exitDoor: { x: 0,   z: 45.8  } },
+            misc:      { interior: '-35 2 8',  id: 'interior-misc',      entrance: { x: -28.9, z: 0     }, exitDoor: { x: -35, z: 9.8   } }
         };
-        const ENTER_RADIUS = 4; // how close the player must walk to auto-enter
+        const ENTER_RADIUS = 4;  // how close the player must walk to auto-enter
+        const EXIT_RADIUS  = 3;  // how close to exit door to auto-exit
+        let transitionCooldown = 0; // prevents instant re-enter after exit
 
         const buildingNames = {
             outdoor:   'Marketplace Plaza',
@@ -1068,14 +1070,6 @@
 
         /* ===== Wire up click interactions ===== */
         function addInteractions() {
-            // Exit doors
-            document.querySelectorAll('.exit-door').forEach(el => {
-                el.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    exitBuilding();
-                });
-            });
-
             // Products
             document.querySelectorAll('.product').forEach(el => {
                 el.addEventListener('click', function (e) {
@@ -1093,19 +1087,37 @@
             });
         }
 
-        /* ===== Proximity-based entrance detection ===== */
+        /* ===== Proximity-based entrance & exit detection ===== */
         function startProximityCheck() {
+            const worldPos = new THREE.Vector3();
             setInterval(function () {
-                if (gameState.currentLocation !== 'outdoor') return;
-                const rig = document.getElementById('camera-rig');
-                const pos = rig.getAttribute('position');
-                for (const [name, info] of Object.entries(buildingInteriors)) {
-                    const dx = pos.x - info.entrance.x;
-                    const dz = pos.z - info.entrance.z;
-                    const dist = Math.sqrt(dx * dx + dz * dz);
-                    if (dist < ENTER_RADIUS) {
-                        enterBuilding(name);
-                        return;
+                // Cooldown after transitions to avoid instant re-trigger
+                if (transitionCooldown > 0) { transitionCooldown--; return; }
+
+                const cam = document.getElementById('camera');
+                cam.object3D.getWorldPosition(worldPos);
+
+                if (gameState.currentLocation === 'outdoor') {
+                    // Check entrance proximity
+                    for (const [name, info] of Object.entries(buildingInteriors)) {
+                        const dx = worldPos.x - info.entrance.x;
+                        const dz = worldPos.z - info.entrance.z;
+                        const dist = Math.sqrt(dx * dx + dz * dz);
+                        if (dist < ENTER_RADIUS) {
+                            enterBuilding(name);
+                            return;
+                        }
+                    }
+                } else {
+                    // Check exit door proximity
+                    const info = buildingInteriors[gameState.currentLocation];
+                    if (info) {
+                        const dx = worldPos.x - info.exitDoor.x;
+                        const dz = worldPos.z - info.exitDoor.z;
+                        const dist = Math.sqrt(dx * dx + dz * dz);
+                        if (dist < EXIT_RADIUS) {
+                            exitBuilding();
+                        }
                     }
                 }
             }, 250); // check 4 times per second
@@ -1115,10 +1127,20 @@
         function enterBuilding(name) {
             const info = buildingInteriors[name];
             if (!info) return;
+            transitionCooldown = 8; // ~2 seconds cooldown (8 × 250ms)
             // Hide outdoor world, show this interior
             document.getElementById('outdoor-world').setAttribute('visible', 'false');
             document.getElementById(info.id).setAttribute('visible', 'true');
-            // Move camera inside
+            // Reset camera local offset and look direction
+            const cam = document.getElementById('camera');
+            cam.setAttribute('position', '0 0 0');
+            // Face into the store (-z direction = yaw 0)
+            const lc = cam.components['look-controls'];
+            if (lc) {
+                lc.yawObject.rotation.set(0, 0, 0);
+                lc.pitchObject.rotation.set(0, 0, 0);
+            }
+            // Move rig to spawn point (in front of exit door)
             const rig = document.getElementById('camera-rig');
             rig.setAttribute('position', info.interior);
             gameState.currentLocation = name;
@@ -1128,10 +1150,14 @@
 
         function exitBuilding() {
             if (gameState.currentLocation === 'outdoor') return;
+            transitionCooldown = 8; // ~2 seconds cooldown
             const info = buildingInteriors[gameState.currentLocation];
             // Hide interior, show outdoor world
             if (info) document.getElementById(info.id).setAttribute('visible', 'false');
             document.getElementById('outdoor-world').setAttribute('visible', 'true');
+            // Reset camera local offset so teleport is exact
+            const cam = document.getElementById('camera');
+            cam.setAttribute('position', '0 0 0');
             // Return to marketplace center
             const rig = document.getElementById('camera-rig');
             rig.setAttribute('position', MARKETPLACE_CENTER);
