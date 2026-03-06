@@ -1,0 +1,167 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#ui-panel {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    z-index: 100;
+    max-width: 300px;
+    box-shadow: 0 0 20px rgba(0, 255, 100, 0.5);
+}
+
+#ui-panel h3 {
+    margin: 0 0 10px 0;
+    color: #00ff64;
+}
+
+.info-text {
+    margin: 5px 0;
+    font-size: 12px;
+}
+
+#location-badge {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #00ff64;
+    padding: 10px 30px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(0, 255, 100, 0.5);
+    transition: all 0.5s;
+}
+
+#modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+    background-color: #222;
+    margin: 5% auto;
+    padding: 30px;
+    border: 2px solid #00ff64;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    color: #fff;
+    box-shadow: 0 0 30px rgba(0, 255, 100, 0.5);
+}
+
+.modal-content h2 {
+    color: #00ff64;
+    margin-top: 0;
+}
+
+.modal-content p {
+    line-height: 1.6;
+    margin: 10px 0;
+}
+
+.price-tag {
+    color: #ffff00;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.btn-group {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #00ff64;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background-color: #00dd55;
+    box-shadow: 0 0 10px rgba(0, 255, 100, 0.8);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+#inventory {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    max-width: 250px;
+    font-size: 12px;
+    box-shadow: 0 0 20px rgba(0, 255, 100, 0.5);
+}
+
+#inventory h4 {
+    margin: 0 0 10px 0;
+    color: #00ff64;
+}
+
+.inventory-item {
+    padding: 5px;
+    margin: 3px 0;
+    background: rgba(0, 255, 100, 0.1);
+    border-left: 3px solid #00ff64;
+}
+
+#exit-btn {
+    display: block;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff4444;
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 100;
+    cursor: pointer;
+    border: 2px solid #ff6666;
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+}
+
+#exit-btn:hover {
+    background: #ff6666;
+}

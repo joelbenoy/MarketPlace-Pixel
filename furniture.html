@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Furniture Store - Pixel Marketplace</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.2.0/dist/aframe-extras.min.js"></script>
+    <link rel="stylesheet" href="shared.css">
+</head>
+<body>
+    <a-scene renderer="antialias: true; colorManagement: true"
+             loading-screen="dotsColor: #d4944a; backgroundColor: #000">
+
+        <!-- Camera -->
+        <a-entity id="camera-rig" position="0 2 9">
+            <a-entity id="camera" camera="active: true" look-controls wasd-controls="acceleration: 30"
+                      cursor="rayOrigin: mouse; fuse: false"
+                      raycaster="objects: .clickable, .product, .exit-door; far: 30">
+            </a-entity>
+        </a-entity>
+
+        <!-- Sky -->
+        <a-sky color="#f0e8d8"></a-sky>
+
+        <!-- Lighting -->
+        <a-light type="ambient" intensity="0.4" color="#ffffff"></a-light>
+        <a-light type="point" intensity="0.8" distance="25" color="#fff5ee" position="0 4.5 0"></a-light>
+        <a-light type="point" intensity="0.4" distance="15" color="#fff5ee" position="-6 4.5 -6"></a-light>
+        <a-light type="point" intensity="0.4" distance="15" color="#fff5ee" position="6 4.5 6"></a-light>
+
+        <!-- Floor -->
+        <a-plane geometry="primitive: plane; width: 22; height: 22"
+                 material="color: #c8a882; roughness: 0.8"
+                 rotation="-90 0 0" position="0 0.01 0"></a-plane>
+        <!-- Ceiling -->
+        <a-plane geometry="primitive: plane; width: 22; height: 22"
+                 material="color: #f0e8d8; side: double"
+                 rotation="90 0 0" position="0 5 0"></a-plane>
+        <!-- Walls -->
+        <a-box geometry="primitive: box; width: 22; height: 5; depth: 0.3"
+               material="color: #dcc8a8" position="0 2.5 -11"></a-box>
+        <a-box geometry="primitive: box; width: 22; height: 5; depth: 0.3"
+               material="color: #dcc8a8" position="0 2.5 11"></a-box>
+        <a-box geometry="primitive: box; width: 0.3; height: 5; depth: 22"
+               material="color: #d4b890" position="-11 2.5 0"></a-box>
+        <a-box geometry="primitive: box; width: 0.3; height: 5; depth: 22"
+               material="color: #d4b890" position="11 2.5 0"></a-box>
+
+        <!-- Store title -->
+        <a-text value="FURNITURE STORE" position="0 4 -10.8" align="center"
+                color="#8B4513" scale="2.5 2.5 2.5"></a-text>
+
+        <!-- Products -->
+        <!-- Sofa -->
+        <a-entity class="product clickable" data-product="Sofa" data-price="800"
+                  data-description="3-seater premium fabric sofa in beige"
+                  position="-6 0 -6">
+            <a-box geometry="primitive: box; width: 3; height: 0.8; depth: 1.2" material="color: #c19a6b" position="0 0.4 0"></a-box>
+            <a-box geometry="primitive: box; width: 3; height: 0.6; depth: 0.3" material="color: #a0784c" position="0 1 -0.45"></a-box>
+            <a-box geometry="primitive: box; width: 0.5; height: 0.6; depth: 1.2" material="color: #a0784c" position="-1.25 1 0"></a-box>
+            <a-box geometry="primitive: box; width: 0.5; height: 0.6; depth: 1.2" material="color: #a0784c" position="1.25 1 0"></a-box>
+            <a-text value="Sofa - $800" position="0 1.5 0" align="center" color="#8B4513" scale="0.8 0.8 0.8"></a-text>
+        </a-entity>
+
+        <!-- Dining Table -->
+        <a-entity class="product clickable" data-product="Dining Table" data-price="450"
+                  data-description="Solid oak dining table seats 6 people"
+                  position="0 0 0">
+            <a-box geometry="primitive: box; width: 3; height: 0.15; depth: 1.5" material="color: #8B4513" position="0 1.2 0"></a-box>
+            <a-box geometry="primitive: box; width: 0.15; height: 1.2; depth: 0.15" material="color: #654321" position="-1.3 0.6 -0.6"></a-box>
+            <a-box geometry="primitive: box; width: 0.15; height: 1.2; depth: 0.15" material="color: #654321" position="1.3 0.6 -0.6"></a-box>
+            <a-box geometry="primitive: box; width: 0.15; height: 1.2; depth: 0.15" material="color: #654321" position="-1.3 0.6 0.6"></a-box>
+            <a-box geometry="primitive: box; width: 0.15; height: 1.2; depth: 0.15" material="color: #654321" position="1.3 0.6 0.6"></a-box>
+            <a-text value="Table - $450" position="0 1.8 0" align="center" color="#8B4513" scale="0.8 0.8 0.8"></a-text>
+        </a-entity>
+
+        <!-- Chair -->
+        <a-entity class="product clickable" data-product="Chair" data-price="120"
+                  data-description="Ergonomic wooden chair with cushion"
+                  position="5 0 -5">
+            <a-box geometry="primitive: box; width: 0.8; height: 0.1; depth: 0.8" material="color: #a0522d" position="0 0.7 0"></a-box>
+            <a-box geometry="primitive: box; width: 0.1; height: 0.7; depth: 0.1" material="color: #8B4513" position="-0.3 0.35 -0.3"></a-box>
+            <a-box geometry="primitive: box; width: 0.1; height: 0.7; depth: 0.1" material="color: #8B4513" position="0.3 0.35 -0.3"></a-box>
+            <a-box geometry="primitive: box; width: 0.1; height: 0.7; depth: 0.1" material="color: #8B4513" position="-0.3 0.35 0.3"></a-box>
+            <a-box geometry="primitive: box; width: 0.1; height: 0.7; depth: 0.1" material="color: #8B4513" position="0.3 0.35 0.3"></a-box>
+            <a-box geometry="primitive: box; width: 0.8; height: 0.8; depth: 0.1" material="color: #a0522d" position="0 1.1 -0.35"></a-box>
+            <a-text value="Chair - $120" position="0 1.8 0" align="center" color="#8B4513" scale="0.7 0.7 0.7"></a-text>
+        </a-entity>
+
+        <!-- Bookshelf -->
+        <a-entity class="product clickable" data-product="Bookshelf" data-price="350"
+                  data-description="Tall walnut bookshelf with 5 tiers"
+                  position="-7 0 3">
+            <a-box geometry="primitive: box; width: 1.5; height: 3; depth: 0.4" material="color: #5c3317" position="0 1.5 0"></a-box>
+            <a-box geometry="primitive: box; width: 1.3; height: 0.08; depth: 0.35" material="color: #6b3a1f" position="0 0.6 0"></a-box>
+            <a-box geometry="primitive: box; width: 1.3; height: 0.08; depth: 0.35" material="color: #6b3a1f" position="0 1.2 0"></a-box>
+            <a-box geometry="primitive: box; width: 1.3; height: 0.08; depth: 0.35" material="color: #6b3a1f" position="0 1.8 0"></a-box>
+            <a-box geometry="primitive: box; width: 1.3; height: 0.08; depth: 0.35" material="color: #6b3a1f" position="0 2.4 0"></a-box>
+            <a-text value="Bookshelf\n$350" position="0 3.3 0" align="center" color="#8B4513" scale="0.7 0.7 0.7"></a-text>
+        </a-entity>
+
+        <!-- Floor Lamp -->
+        <a-entity class="product clickable" data-product="Floor Lamp" data-price="95"
+                  data-description="Modern LED floor lamp with dimmer"
+                  position="7 0 3">
+            <a-cylinder geometry="primitive: cylinder; radius: 0.08; height: 2.5" material="color: #333" position="0 1.25 0"></a-cylinder>
+            <a-cone geometry="primitive: cone; radiusBottom: 0.5; radiusTop: 0.1; height: 0.5"
+                    material="color: #f5e6cc; emissive: #ffee88; emissiveIntensity: 0.4" position="0 2.7 0"></a-cone>
+            <a-text value="Lamp - $95" position="0 3.3 0" align="center" color="#8B4513" scale="0.7 0.7 0.7"></a-text>
+        </a-entity>
+
+        <!-- Bed -->
+        <a-entity class="product clickable" data-product="King Size Bed" data-price="1200"
+                  data-description="Luxury king size bed with memory foam mattress"
+                  position="5 0 5">
+            <a-box geometry="primitive: box; width: 2.5; height: 0.5; depth: 3" material="color: #8B4513" position="0 0.25 0"></a-box>
+            <a-box geometry="primitive: box; width: 2.3; height: 0.3; depth: 2.8" material="color: #f5f5f5" position="0 0.65 0"></a-box>
+            <a-box geometry="primitive: box; width: 2.5; height: 1; depth: 0.2" material="color: #654321" position="0 0.8 -1.4"></a-box>
+            <a-box geometry="primitive: box; width: 0.8; height: 0.15; depth: 0.6" material="color: #ddd" position="-0.5 0.85 -1"></a-box>
+            <a-box geometry="primitive: box; width: 0.8; height: 0.15; depth: 0.6" material="color: #ddd" position="0.5 0.85 -1"></a-box>
+            <a-text value="Bed - $1200" position="0 1.8 0" align="center" color="#8B4513" scale="0.8 0.8 0.8"></a-text>
+        </a-entity>
+
+        <!-- Staff NPC -->
+        <a-entity id="staff-furniture" position="-3 0 6">
+            <a-box geometry="primitive: box; width: 0.6; height: 1.6; depth: 0.4" material="color: #d4944a" position="0 0.8 0"></a-box>
+            <a-sphere geometry="primitive: sphere; radius: 0.3" material="color: #ffdbac" position="0 1.8 0"></a-sphere>
+            <a-text value="Staff: Robert" position="0 2.3 0" align="center" color="#333" scale="0.7 0.7 0.7"></a-text>
+        </a-entity>
+
+        <!-- EXIT DOOR -->
+        <a-box class="exit-door clickable" data-building="furniture"
+               geometry="primitive: box; width: 2; height: 3.5; depth: 0.4"
+               material="color: #cc0000; emissive: #880000; emissiveIntensity: 0.3"
+               position="0 1.75 10.8">
+            <a-text value="EXIT" position="0 0 0.25" align="center" color="#fff" scale="1.5 1.5 1.5"></a-text>
+        </a-box>
+
+    </a-scene>
+
+    <!-- Location badge -->
+    <div id="location-badge">Furniture Store</div>
+
+    <!-- UI Panel -->
+    <div id="ui-panel">
+        <h3>Furniture Store</h3>
+        <div class="info-text"><strong>Controls:</strong></div>
+        <div class="info-text">• WASD: Move</div>
+        <div class="info-text">• Mouse: Look around</div>
+        <div class="info-text">• Click: Interact with products</div>
+        <hr>
+        <div class="info-text"><strong>Balance: $<span id="balance">100000</span></strong></div>
+        <hr>
+        <div class="info-text">Walk to the red EXIT door to return to the marketplace.</div>
+    </div>
+
+    <div id="inventory">
+        <h4>Inventory</h4>
+        <div id="inventory-list">
+            <div class="inventory-item">Empty - Start shopping!</div>
+        </div>
+        <button style="width: 100%; margin-top: 10px;" onclick="sellInventory()">Sell All ($<span id="sell-price">0</span>)</button>
+    </div>
+
+    <!-- Exit building button -->
+    <div id="exit-btn" onclick="exitToMarketplace()">Exit Building</div>
+
+    <!-- Modal -->
+    <div id="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Product Details</h2>
+            <p id="modal-description"></p>
+            <p class="price-tag" id="modal-price"></p>
+            <div class="btn-group">
+                <button onclick="purchaseItem()">Purchase</button>
+                <button onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+</body>
+</html>

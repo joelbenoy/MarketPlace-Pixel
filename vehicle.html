@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Showroom - Pixel Marketplace</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.2.0/dist/aframe-extras.min.js"></script>
+    <link rel="stylesheet" href="shared.css">
+</head>
+<body>
+    <a-scene renderer="antialias: true; colorManagement: true"
+             loading-screen="dotsColor: #ff4444; backgroundColor: #000">
+
+        <!-- Camera -->
+        <a-entity id="camera-rig" position="0 2 9">
+            <a-entity id="camera" camera="active: true" look-controls wasd-controls="acceleration: 30"
+                      cursor="rayOrigin: mouse; fuse: false"
+                      raycaster="objects: .clickable, .product, .exit-door; far: 30">
+            </a-entity>
+        </a-entity>
+
+        <!-- Sky -->
+        <a-sky color="#d0d0d8"></a-sky>
+
+        <!-- Lighting -->
+        <a-light type="ambient" intensity="0.4" color="#ffffff"></a-light>
+        <a-light type="point" intensity="1" distance="30" color="#ffffff" position="0 5.5 0"></a-light>
+        <a-light type="point" intensity="0.5" distance="20" color="#ffffff" position="-6 5.5 -5"></a-light>
+        <a-light type="point" intensity="0.5" distance="20" color="#ffffff" position="6 5.5 5"></a-light>
+
+        <!-- Floor -->
+        <a-plane geometry="primitive: plane; width: 26; height: 22"
+                 material="color: #e0e0e0; roughness: 0.4"
+                 rotation="-90 0 0" position="0 0.01 0"></a-plane>
+        <!-- Ceiling -->
+        <a-plane geometry="primitive: plane; width: 26; height: 22"
+                 material="color: #f0f0f0; side: double"
+                 rotation="90 0 0" position="0 6 0"></a-plane>
+        <!-- Walls -->
+        <a-box geometry="primitive: box; width: 26; height: 6; depth: 0.3"
+               material="color: #cccccc" position="0 3 -11"></a-box>
+        <a-box geometry="primitive: box; width: 26; height: 6; depth: 0.3"
+               material="color: #cccccc" position="0 3 11"></a-box>
+        <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 22"
+               material="color: #bbb" position="-13 3 0"></a-box>
+        <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 22"
+               material="color: #bbb" position="13 3 0"></a-box>
+
+        <!-- Store title -->
+        <a-text value="VEHICLE SHOWROOM" position="0 5 -10.8" align="center"
+                color="#cc0000" scale="2.5 2.5 2.5"></a-text>
+
+        <!-- Products -->
+        <!-- Sedan Car -->
+        <a-entity class="product clickable" data-product="Sedan Car" data-price="25000"
+                  data-description="4-door family sedan with automatic transmission, fuel efficient"
+                  position="-6 0 -4">
+            <a-box geometry="primitive: box; width: 4; height: 1; depth: 1.8" material="color: #c0392b" position="0 0.8 0"></a-box>
+            <a-box geometry="primitive: box; width: 2.5; height: 0.8; depth: 1.6" material="color: #e74c3c" position="0 1.7 0"></a-box>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.2" material="color: #222" position="-1.2 0.35 -1" rotation="90 0 0"></a-cylinder>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.2" material="color: #222" position="1.2 0.35 -1" rotation="90 0 0"></a-cylinder>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.2" material="color: #222" position="-1.2 0.35 1" rotation="90 0 0"></a-cylinder>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.2" material="color: #222" position="1.2 0.35 1" rotation="90 0 0"></a-cylinder>
+            <a-text value="Sedan - $25,000" position="0 2.8 0" align="center" color="#c0392b" scale="0.8 0.8 0.8"></a-text>
+        </a-entity>
+
+        <!-- SUV -->
+        <a-entity class="product clickable" data-product="SUV" data-price="45000"
+                  data-description="Full-size SUV with 4WD, leather seats, panoramic sunroof"
+                  position="6 0 -4">
+            <a-box geometry="primitive: box; width: 4.5; height: 1.5; depth: 2" material="color: #2c3e50" position="0 1 0"></a-box>
+            <a-box geometry="primitive: box; width: 3; height: 1; depth: 1.8" material="color: #34495e" position="0 2.2 0"></a-box>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.4; height: 0.25" material="color: #222" position="-1.5 0.4 -1.1" rotation="90 0 0"></a-cylinder>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.4; height: 0.25" material="color: #222" position="1.5 0.4 -1.1" rotation="90 0 0"></a-cylinder>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.4; height: 0.25" material="color: #222" position="-1.5 0.4 1.1" rotation="90 0 0"></a-cylinder>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.4; height: 0.25" material="color: #222" position="1.5 0.4 1.1" rotation="90 0 0"></a-cylinder>
+            <a-text value="SUV - $45,000" position="0 3.3 0" align="center" color="#2c3e50" scale="0.8 0.8 0.8"></a-text>
+        </a-entity>
+
+        <!-- Motorcycle -->
+        <a-entity class="product clickable" data-product="Motorcycle" data-price="8500"
+                  data-description="Sport motorcycle, 600cc engine, ABS braking system"
+                  position="-6 0 4">
+            <a-box geometry="primitive: box; width: 2; height: 0.6; depth: 0.5" material="color: #1a1a1a" position="0 0.8 0"></a-box>
+            <a-box geometry="primitive: box; width: 0.8; height: 0.6; depth: 0.4" material="color: #e67e22" position="0.3 1.3 0"></a-box>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.15" material="color: #222" position="-0.7 0.35 0" rotation="90 0 0"></a-cylinder>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.15" material="color: #222" position="0.7 0.35 0" rotation="90 0 0"></a-cylinder>
+            <a-text value="Motorcycle\n$8,500" position="0 2 0" align="center" color="#e67e22" scale="0.7 0.7 0.7"></a-text>
+        </a-entity>
+
+        <!-- Bicycle -->
+        <a-entity class="product clickable" data-product="Bicycle" data-price="350"
+                  data-description="Lightweight mountain bicycle with 21 gears"
+                  position="0 0 5">
+            <a-box geometry="primitive: box; width: 1.2; height: 0.1; depth: 0.1" material="color: #27ae60" position="0 0.8 0" rotation="0 0 -15"></a-box>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.08" material="color: #222" position="-0.5 0.5 0" rotation="90 0 0"></a-cylinder>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.08" material="color: #222" position="0.5 0.5 0" rotation="90 0 0"></a-cylinder>
+            <a-box geometry="primitive: box; width: 0.1; height: 0.5; depth: 0.1" material="color: #27ae60" position="0 1.1 0"></a-box>
+            <a-text value="Bicycle - $350" position="0 1.8 0" align="center" color="#27ae60" scale="0.7 0.7 0.7"></a-text>
+        </a-entity>
+
+        <!-- Electric Scooter -->
+        <a-entity class="product clickable" data-product="Electric Scooter" data-price="600"
+                  data-description="Foldable electric scooter with 25 mile range"
+                  position="6 0 5">
+            <a-box geometry="primitive: box; width: 0.5; height: 0.1; depth: 0.2" material="color: #555" position="0 0.4 0"></a-box>
+            <a-box geometry="primitive: box; width: 0.08; height: 1.2; depth: 0.08" material="color: #555" position="0.2 1 0"></a-box>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.15; height: 0.08" material="color: #222" position="-0.2 0.15 0" rotation="90 0 0"></a-cylinder>
+            <a-cylinder geometry="primitive: cylinder; radius: 0.15; height: 0.08" material="color: #222" position="0.2 0.15 0" rotation="90 0 0"></a-cylinder>
+            <a-text value="Scooter\n$600" position="0 2 0" align="center" color="#555" scale="0.7 0.7 0.7"></a-text>
+        </a-entity>
+
+        <!-- Staff NPC -->
+        <a-entity id="staff-vehicle" position="8 0 0">
+            <a-box geometry="primitive: box; width: 0.6; height: 1.6; depth: 0.4" material="color: #3a3a5a" position="0 0.8 0"></a-box>
+            <a-sphere geometry="primitive: sphere; radius: 0.3" material="color: #ffdbac" position="0 1.8 0"></a-sphere>
+            <a-text value="Staff: Mike" position="0 2.3 0" align="center" color="#333" scale="0.7 0.7 0.7"></a-text>
+        </a-entity>
+
+        <!-- EXIT DOOR -->
+        <a-box class="exit-door clickable" data-building="vehicle"
+               geometry="primitive: box; width: 2.5; height: 3.5; depth: 0.4"
+               material="color: #cc0000; emissive: #880000; emissiveIntensity: 0.3"
+               position="0 1.75 10.8">
+            <a-text value="EXIT" position="0 0 0.25" align="center" color="#fff" scale="1.5 1.5 1.5"></a-text>
+        </a-box>
+
+    </a-scene>
+
+    <!-- Location badge -->
+    <div id="location-badge">Vehicle Showroom</div>
+
+    <!-- UI Panel -->
+    <div id="ui-panel">
+        <h3>Vehicle Showroom</h3>
+        <div class="info-text"><strong>Controls:</strong></div>
+        <div class="info-text">• WASD: Move</div>
+        <div class="info-text">• Mouse: Look around</div>
+        <div class="info-text">• Click: Interact with products</div>
+        <hr>
+        <div class="info-text"><strong>Balance: $<span id="balance">100000</span></strong></div>
+        <hr>
+        <div class="info-text">Walk to the red EXIT door to return to the marketplace.</div>
+    </div>
+
+    <div id="inventory">
+        <h4>Inventory</h4>
+        <div id="inventory-list">
+            <div class="inventory-item">Empty - Start shopping!</div>
+        </div>
+        <button style="width: 100%; margin-top: 10px;" onclick="sellInventory()">Sell All ($<span id="sell-price">0</span>)</button>
+    </div>
+
+    <!-- Exit building button -->
+    <div id="exit-btn" onclick="exitToMarketplace()">Exit Building</div>
+
+    <!-- Modal -->
+    <div id="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Product Details</h2>
+            <p id="modal-description"></p>
+            <p class="price-tag" id="modal-price"></p>
+            <div class="btn-group">
+                <button onclick="purchaseItem()">Purchase</button>
+                <button onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+</body>
+</html>
