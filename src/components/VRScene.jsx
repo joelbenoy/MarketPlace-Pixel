@@ -46,7 +46,7 @@ export default function VRScene({ room, showHUD = true }) {
             <a-scene
                 ref={sceneRef}
                 webxr="requiredFeatures: local-floor"
-                renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true"
+                renderer="antialias: true; colorManagement: true"
                 vr-mode-ui="enabled: true"
                 loading-screen="dotsColor: #3FFFD2; backgroundColor: #080810"
                 embedded
@@ -66,17 +66,17 @@ export default function VRScene({ room, showHUD = true }) {
                     )}
                 </a-assets>
 
-                {/* Sky / environment */}
-                <a-sky color="#020208" />
+                {/* Sky / environment — deep navy, not pitch black */}
+                <a-sky color="#0a0a2e" />
 
-                {/* Dark floor */}
+                {/* Floor — slightly lighter so it's visible */}
                 <a-plane
                     position="0 0 0"
                     rotation="-90 0 0"
                     width="30"
                     height="30"
-                    color="#0D0D1A"
-                    shadow="receive: true"
+                    color="#1a1a2e"
+                    material="shader: flat; color: #1a1a2e"
                 />
 
                 {/* Teal grid overlay on floor */}
@@ -93,10 +93,16 @@ export default function VRScene({ room, showHUD = true }) {
           `}
                 />
 
-                {/* Ambient + directional light */}
-                <a-light type="ambient" color="#142828" intensity="0.7" />
-                <a-light type="directional" position="2 6 2" color="#3FFFD2" intensity="0.25" />
-                <a-light type="point" position="0 4 0" color="#ffffff" intensity="0.5" distance="20" />
+                {/* Bright ambient — key fix for visibility */}
+                <a-light type="ambient" color="#ffffff" intensity="3.0" />
+                {/* Directional fill lights from multiple angles */}
+                <a-light type="directional" position="5 8 5" color="#ffffff" intensity="1.5" />
+                <a-light type="directional" position="-5 8 5" color="#d0f0ff" intensity="1.0" />
+                <a-light type="directional" position="0 8 -5" color="#ffffff" intensity="1.0" />
+                {/* Point lights scattered around room */}
+                <a-light type="point" position="0 5 0" color="#ffffff" intensity="2.0" distance="25" />
+                <a-light type="point" position="3 4 -3" color="#3FFFD2" intensity="0.8" distance="12" />
+                <a-light type="point" position="-3 4 -3" color="#3FFFD2" intensity="0.8" distance="12" />
 
                 {/* Camera rig with locomotion */}
                 <a-entity
@@ -130,29 +136,37 @@ export default function VRScene({ room, showHUD = true }) {
                 {room.items.map(item => {
                     const { x, y, z } = item.position
                     const ry = item.rotation?.y || 0
-                    const thumb = `#img-${item.id}`
+                    // Use direct URL string — avoids asset ID resolution issues with flat shader
+                    const thumbSrc = item.photos[0]
 
                     return (
                         <a-entity key={item.id} position={`${x} ${y} ${z}`} rotation={`0 ${ry} 0`}>
-                            {/* Item thumbnail plane */}
+                            {/* Item photo panel */}
                             <a-plane
-                                width="1.4"
-                                height="1.0"
-                                src={thumb}
+                                width="1.8"
+                                height="1.3"
+                                src={thumbSrc}
                                 side="double"
-                                shadow="cast: true"
                                 hc-clickable
                                 data-item-id={item.id}
                                 cursor-listener
                                 class="clickable"
                             />
-                            {/* Item name label */}
+                            {/* Teal glow border frame */}
+                            <a-plane
+                                width="1.9"
+                                height="1.4"
+                                material="shader: flat; color: #3FFFD2; opacity: 0.3; transparent: true"
+                                position="0 0 -0.015"
+                                side="double"
+                            />
+                            {/* Item name label above */}
                             <a-text
                                 value={item.name}
                                 color="#3FFFD2"
                                 align="center"
-                                width="2"
-                                position="0 0.72 0"
+                                width="2.5"
+                                position="0 0.92 0.01"
                                 font="roboto"
                             />
                             {/* Hotspots */}
