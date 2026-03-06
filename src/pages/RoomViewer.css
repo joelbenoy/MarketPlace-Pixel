@@ -1,0 +1,38 @@
+/* RoomViewer.css */
+.viewer-root {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background: #020208;
+    overflow: hidden;
+}
+
+.viewer-back {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 20;
+}
+
+.viewer-error {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.viewer-error-box {
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+}
+
+.viewer-loading {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+}

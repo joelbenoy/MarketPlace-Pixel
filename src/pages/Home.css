@@ -1,0 +1,119 @@
+/* Home.css */
+.home-root {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow: hidden;
+}
+
+.home-content {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+}
+
+/* Logo */
+.home-logo-area {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.home-logo {
+    font-family: var(--font-head);
+    font-size: clamp(52px, 10vw, 88px);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    color: var(--text);
+    text-shadow: 0 0 80px rgba(63, 255, 210, 0.15);
+    margin-bottom: 8px;
+}
+
+.home-tagline {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+/* Device badges */
+.home-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* PIN Card */
+.home-card {
+    width: 100%;
+    padding: 32px;
+}
+
+.home-card-label {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.home-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.home-divider::before,
+.home-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* Feature strip */
+.home-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+@media (max-width: 480px) {
+    .home-features {
+        grid-template-columns: 1fr;
+    }
+
+    .home-logo {
+        font-size: 52px;
+    }
+}
+
+.home-feature {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.home-feature-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: var(--font-body);
+}
+
+/* Footer */
+.home-footer {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-align: center;
+    opacity: 0.5;
+}

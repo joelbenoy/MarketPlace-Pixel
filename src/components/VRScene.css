@@ -1,0 +1,48 @@
+/* VRScene.css */
+.vr-scene-root {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: #020208;
+}
+
+.vr-scene-root a-scene {
+    position: absolute;
+    inset: 0;
+}
+
+/* Bottom HUD bar */
+.vr-hud {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: linear-gradient(to top, rgba(8, 8, 16, 0.95) 0%, rgba(8, 8, 16, 0.0) 100%);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.vr-hud-left,
+.vr-hud-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    pointer-events: all;
+}
+
+.vr-room-name {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+}
+
+.vr-item-count {
+    font-size: 12px;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+}

@@ -1,0 +1,112 @@
+/* PannellumViewer.css */
+.pannellum-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    animation: fade-in 0.25s ease;
+}
+
+.pannellum-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: rgba(8, 8, 16, 0.9);
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+.pannellum-item-name {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pannellum-photo-count {
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.pannellum-main {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.pannellum-container {
+    width: 100%;
+    height: 100%;
+}
+
+.pannellum-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 8, 16, 0.8);
+    z-index: 3;
+}
+
+.pannellum-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(8, 8, 16, 0.9);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.pannellum-thumbnails {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+}
+
+.pannellum-thumbnails::-webkit-scrollbar {
+    display: none;
+}
+
+.pannellum-thumb {
+    width: 56px;
+    height: 40px;
+    border: 2px solid transparent;
+    padding: 0;
+    cursor: pointer;
+    background: none;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s;
+}
+
+.pannellum-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pannellum-thumb:hover {
+    border-color: var(--accent-glow);
+}
+
+.pannellum-thumb.active {
+    border-color: var(--accent);
+    transform: scale(1.05);
+}
+
+.pannellum-arrows {
+    display: flex;
+    gap: 12px;
+}
