@@ -56,29 +56,64 @@
         <a-box geometry="primitive: box; width: 0.5; height: 3; depth: 6"
                material="color: #c8a882" position="-9.5 1.5 -4"></a-box>
         <!-- T-Shirt -->
-        <a-box class="product clickable"
-               data-product="T-Shirt" data-price="25"
-               data-description="Comfortable cotton t-shirt available in multiple colors"
-               geometry="primitive: box; width: 0.8; height: 0.8; depth: 0.3"
-               material="color: #ff6b6b" position="-9 2.5 -6">
-            <a-text value="T-Shirt\n$25" position="0 0 0.2" align="center" color="#fff" scale="0.6 0.6 0.6"></a-text>
-        </a-box>
+        <a-assets>
+            <a-asset-item id="tshirtModel" src="tshirt.glb"></a-asset-item>
+        </a-assets>
+        <a-entity class="product clickable"
+                data-product="T-Shirt"
+                data-price="25"
+                data-description="Comfortable cotton t-shirt available in multiple colors"
+                gltf-model="#tshirtModel"
+                position="-8.5 2 -6"
+                scale="2 2 2"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+                
+        <a-text value="T-Shirt\n$25"
+                    position="0 1 0"
+                    align="center"
+                    color="#fff">
+        </a-text>
+        </a-entity>
+
         <!-- Jeans -->
-        <a-box class="product clickable"
-               data-product="Jeans" data-price="60"
-               data-description="Classic blue denim jeans with modern fit"
-               geometry="primitive: box; width: 0.6; height: 1.2; depth: 0.3"
-               material="color: #1a5276" position="-9 2.5 -4">
-            <a-text value="Jeans\n$60" position="0 0 0.2" align="center" color="#fff" scale="0.6 0.6 0.6"></a-text>
-        </a-box>
+        <a-assets>
+            <a-asset-item id="jeansModel" src="jeans.glb"></a-asset-item>
+        </a-assets>
+        <a-entity class="product clickable"
+                data-product="T-Shirt"
+                data-price="60"
+                data-description="Classic blue denim jeans with modern fit"
+                gltf-model="#jeansModel"
+                position="-8.5 1.5 -4"
+                scale="0.3 0.3 0.3"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+                
+        <a-text value="Jeans\n$60"
+                    position="0 6 0"
+                    align="center"
+                    color="#fff">
+        </a-text>
+        </a-entity>
         <!-- Jacket -->
-        <a-box class="product clickable"
-               data-product="Leather Jacket" data-price="180"
-               data-description="Premium leather jacket with zip closure"
-               geometry="primitive: box; width: 1; height: 1; depth: 0.4"
-               material="color: #2c1810" position="-9 2.5 -2">
-            <a-text value="Jacket\n$180" position="0 0 0.25" align="center" color="#ffff00" scale="0.6 0.6 0.6"></a-text>
-        </a-box>
+        <a-assets>
+            <a-asset-item id="jacketModel" src="jacket.glb"></a-asset-item>
+        </a-assets>
+        <a-entity class="product clickable"
+                data-product="Jacket"
+                data-price="180"
+                data-description="Premium leather jacket with zip closure"
+                gltf-model="#jacketModel"
+                position="-8.5 2 -2"
+                scale="0.1 0.1 0.1"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+                
+        <a-text value="Jacket\n$180"
+                    position="0 0.5 0"
+                    align="center"
+                    color="#fff"
+                    scale="1 1 1">
+        </a-text>
+        </a-entity>
 
         <!-- Shelf 2: Right wall -->
         <a-box geometry="primitive: box; width: 0.5; height: 3; depth: 6"
