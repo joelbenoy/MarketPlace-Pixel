@@ -102,7 +102,7 @@
              loading-screen="dotsColor: #00ff64; backgroundColor: #000">
 
         <!-- Camera -->
-        <a-entity id="camera-rig" position="0 2 15">
+        <a-entity id="camera-rig" position="0 2 8">
             <a-entity id="camera" camera="active: true" look-controls wasd-controls="acceleration: 30"
                       cursor="rayOrigin: mouse; fuse: false"
                       raycaster="objects: .clickable; far: 30">
@@ -442,7 +442,12 @@
         /* ===== Proximity-based entrance detection ===== */
         function startProximityCheck() {
             const worldPos = new THREE.Vector3();
+            var ready = false;
+            // Delay proximity detection so the camera position is fully
+            // initialised before we start checking (prevents instant redirect)
+            setTimeout(function () { ready = true; }, 2000);
             setInterval(function () {
+                if (!ready) return;
                 const cam = document.getElementById('camera');
                 if (!cam) return;
                 cam.object3D.getWorldPosition(worldPos);

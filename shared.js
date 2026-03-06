@@ -142,8 +142,12 @@ function startExitProximityCheck() {
 
     const worldPos = new THREE.Vector3();
     const doorWorldPos = new THREE.Vector3();
+    var ready = false;
+    // Delay so camera position is fully initialised before checking
+    setTimeout(function () { ready = true; }, 2000);
 
     setInterval(function () {
+        if (!ready) return;
         const cam = document.getElementById('camera');
         if (!cam) return;
         cam.object3D.getWorldPosition(worldPos);
