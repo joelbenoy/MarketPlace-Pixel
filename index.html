@@ -12,12 +12,12 @@
             overflow: hidden;
             font-family: Arial, sans-serif;
         }
-        
+
         #ui-panel {
             position: fixed;
             top: 20px;
             left: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             color: #fff;
             padding: 20px;
             border-radius: 10px;
@@ -26,17 +26,33 @@
             max-width: 300px;
             box-shadow: 0 0 20px rgba(0, 255, 100, 0.5);
         }
-        
+
         #ui-panel h3 {
             margin: 0 0 10px 0;
             color: #00ff64;
         }
-        
+
         .info-text {
             margin: 5px 0;
             font-size: 12px;
         }
-        
+
+        #location-badge {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: #00ff64;
+            padding: 10px 30px;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(0, 255, 100, 0.5);
+            transition: all 0.5s;
+        }
+
         #modal {
             display: none;
             position: fixed;
@@ -47,7 +63,7 @@
             height: 100%;
             background-color: rgba(0,0,0,0.8);
         }
-        
+
         .modal-content {
             background-color: #222;
             margin: 5% auto;
@@ -59,29 +75,29 @@
             color: #fff;
             box-shadow: 0 0 30px rgba(0, 255, 100, 0.5);
         }
-        
+
         .modal-content h2 {
             color: #00ff64;
             margin-top: 0;
         }
-        
+
         .modal-content p {
             line-height: 1.6;
             margin: 10px 0;
         }
-        
+
         .price-tag {
             color: #ffff00;
             font-weight: bold;
             font-size: 16px;
         }
-        
+
         .btn-group {
             margin-top: 20px;
             display: flex;
             gap: 10px;
         }
-        
+
         button {
             padding: 10px 20px;
             margin: 5px;
@@ -94,12 +110,12 @@
             font-size: 14px;
             transition: all 0.3s;
         }
-        
+
         button:hover {
             background-color: #00dd55;
             box-shadow: 0 0 10px rgba(0, 255, 100, 0.8);
         }
-        
+
         .close {
             color: #aaa;
             float: right;
@@ -107,16 +123,16 @@
             font-weight: bold;
             cursor: pointer;
         }
-        
+
         .close:hover {
             color: #fff;
         }
-        
+
         #inventory {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             color: #fff;
             padding: 15px;
             border-radius: 10px;
@@ -124,480 +140,884 @@
             font-size: 12px;
             box-shadow: 0 0 20px rgba(0, 255, 100, 0.5);
         }
-        
+
         #inventory h4 {
             margin: 0 0 10px 0;
             color: #00ff64;
         }
-        
+
         .inventory-item {
             padding: 5px;
             margin: 3px 0;
             background: rgba(0, 255, 100, 0.1);
             border-left: 3px solid #00ff64;
         }
+
+        #exit-btn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff4444;
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 100;
+            cursor: pointer;
+            border: 2px solid #ff6666;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+        }
+
+        #exit-btn:hover {
+            background: #ff6666;
+        }
     </style>
 </head>
 <body>
-    <a-scene physics="debug: false; gravity: -9.8; enableEvents: true" 
-             renderer="antialias: true; colorManagement: true"
+    <a-scene renderer="antialias: true; colorManagement: true"
              loading-screen="dotsColor: #00ff64; backgroundColor: #000">
-        
-        <!-- Camera with wasd-controls for movement -->
-        <a-entity id="camera-container"
-                  position="0 2 10"
-                  camera="active: true"
-                  look-controls
-                  wasd-controls="acceleration: 30">
+
+        <!-- Camera -->
+        <a-entity id="camera-rig" position="0 2 15">
+            <a-entity id="camera" camera="active: true" look-controls wasd-controls="acceleration: 30"
+                      cursor="rayOrigin: mouse; fuse: false"
+                      raycaster="objects: .clickable, .product, .entrance, .exit-door; far: 30">
+            </a-entity>
         </a-entity>
-        
-        <!-- Sky - Night marketplace atmosphere -->
-        <a-sky color="#1a1a2e" material="transparent: true"></a-sky>
-        
+
+        <!-- Sky -->
+        <a-sky color="#87CEEB"></a-sky>
+
         <!-- Lighting -->
-        <a-light type="ambient" intensity="0.6" color="#ffffff"></a-light>
-        <a-light type="directional" intensity="0.8" position="-5 10 5" color="#ffffff" shadow="mapSize: 2048"></a-light>
-        
-        <!-- Ground - Marketplace plaza -->
-        <a-plane id="ground" 
-                 geometry="primitive: plane; width: 100; height: 100" 
-                 material="color: #2a4a3a; wireframe: false"
-                 rotation="-90 0 0"
-                 position="0 0 0"
-                 shadow="receive: true"
-                 physics="type: static">
-        </a-plane>
-        
-        <!-- Ground grid for reference -->
-        <a-entity geometry="primitive: plane; width: 100; height: 100"
-                  material="color: #1a3a2a; wireframe: true; wireframeLinewidth: 2"
-                  rotation="-90 0 0"
-                  position="0 0.01 0">
-        </a-entity>
-        
-        <!-- ============= MARKETPLACE STALLS ============= -->
-        
-        <!-- STALL 1: Electronics Store -->
-        <a-entity id="stall-1" position="15 0 0">
-            <!-- Stall structure -->
-            <a-box geometry="primitive: box; width: 8; height: 3; depth: 8"
-                   material="color: #ff6b35"
-                   position="0 1.5 0"
-                   shadow="cast: true; receive: true">
-            </a-box>
-            
-            <!-- Roof -->
-            <a-cone geometry="primitive: cone; radiusBottom: 5; radiusTop: 0; height: 2"
-                    material="color: #ff4500"
-                    position="0 4 0"
-                    shadow="cast: true">
-            </a-cone>
-            
-            <!-- Store sign -->
-            <a-text value="ELECTRONICS STORE" 
-                    position="0 4.5 -5"
-                    align="center"
-                    color="#ffff00"
-                    scale="2 2 2"
-                    material="emissive: #00ff00">
-            </a-text>
-            
-            <!-- Price sign -->
-            <a-text value="Price: $5000/month" 
-                    position="0 0.5 -5"
-                    align="center"
-                    color="#fff"
-                    scale="1.5 1.5 1.5">
-            </a-text>
-            
-            <!-- Product displays -->
-            <a-box class="product" 
-                   data-product="Laptop"
-                   data-price="999"
-                   data-description="High-performance gaming laptop with RTX graphics"
-                   geometry="primitive: box; width: 1.5; height: 1; depth: 1.5"
-                   material="color: #333"
-                   position="-2 2 -2"
-                   shadow="cast: true">
-                <a-text value="LAPTOP" position="0 0.6 0" align="center" color="#00ff64" scale="1 1 1"></a-text>
-            </a-box>
-            
-            <a-cylinder class="product"
-                        data-product="Smartphone"
-                        data-price="799"
-                        data-description="Latest tech smartphone with 5G capability"
-                        geometry="primitive: cylinder; radius: 0.3; height: 0.8"
-                        material="color: #000"
-                        position="1 2 -2"
-                        shadow="cast: true">
-                <a-text value="PHONE" position="0 0.5 0.5" align="center" color="#00ffff" scale="0.8 0.8 0.8"></a-text>
-            </a-cylinder>
-            
-            <a-box class="product"
-                   data-product="Tablet"
-                   data-price="599"
-                   data-description="Ultra-thin tablet with stylus support"
-                   geometry="primitive: box; width: 1.2; height: 0.1; depth: 1.8"
-                   material="color: #555"
-                   position="-2 1.5 0"
-                   shadow="cast: true">
-                <a-text value="TABLET" position="0 0.1 0.9" align="center" color="#ff00ff" scale="0.8 0.8 0.8"></a-text>
-            </a-box>
-            
-            <!-- Staff NPC -->
-            <a-entity id="staff-1" position="2 0 2">
-                <a-box geometry="primitive: box; width: 0.6; height: 1.8; depth: 0.6"
-                       material="color: #ff69b4">
-                </a-box>
-                <a-sphere geometry="primitive: sphere; radius: 0.4"
-                          material="color: #ffdbac"
-                          position="0 1 0">
-                </a-sphere>
-                <a-text value="Staff: John" position="0 1.6 0" align="center" color="#fff" scale="0.8 0.8 0.8"></a-text>
-                <a-text value="Click to chat" position="0 -1 0" align="center" color="#00ff64" scale="0.6 0.6 0.6"></a-text>
+        <a-light type="ambient" intensity="0.5" color="#ffffff"></a-light>
+        <a-light type="directional" intensity="0.8" position="-5 15 5" color="#fffbe6" shadow="cast: true"></a-light>
+        <a-light type="hemisphere" intensity="0.3" color="#87CEEB" groundColor="#362"></a-light>
+
+        <!-- ============================================================ -->
+        <!-- OUTDOOR WORLD                                                -->
+        <!-- ============================================================ -->
+        <a-entity id="outdoor-world">
+
+            <!-- Ground -->
+            <a-plane geometry="primitive: plane; width: 200; height: 200"
+                     material="color: #4a8c3f; roughness: 1"
+                     rotation="-90 0 0" position="0 0 0" shadow="receive: true"></a-plane>
+
+            <!-- ======= CENTRAL PLAZA ======= -->
+            <!-- Circular plaza -->
+            <a-cylinder geometry="primitive: cylinder; radius: 12; height: 0.15; segmentsRadial: 64"
+                        material="color: #c8b08a; roughness: 0.9"
+                        position="0 0.05 0" shadow="receive: true"></a-cylinder>
+            <!-- Fountain base -->
+            <a-cylinder geometry="primitive: cylinder; radius: 2.5; height: 0.8; segmentsRadial: 32"
+                        material="color: #888" position="0 0.4 0"></a-cylinder>
+            <!-- Fountain bowl -->
+            <a-torus geometry="primitive: torus; radius: 2.5; radiusTubular: 0.3; segmentsRadial: 32"
+                     material="color: #999" position="0 0.8 0"></a-torus>
+            <!-- Water -->
+            <a-cylinder geometry="primitive: cylinder; radius: 2.2; height: 0.1; segmentsRadial: 32"
+                        material="color: #4488cc; transparent: true; opacity: 0.7"
+                        position="0 0.75 0"></a-cylinder>
+            <!-- Fountain pillar -->
+            <a-cylinder geometry="primitive: cylinder; radius: 0.3; height: 2"
+                        material="color: #aaa" position="0 1.5 0"></a-cylinder>
+            <!-- Marketplace title -->
+            <a-text value="PIXEL MARKETPLACE" position="0 4 0" align="center"
+                    color="#1a3a1a" scale="3 3 3" side="double"></a-text>
+
+            <!-- ======= ROADS ======= -->
+            <!-- Road to Clothing (North) -->
+            <a-plane geometry="primitive: plane; width: 4; height: 25"
+                     material="color: #555; roughness: 0.9"
+                     rotation="-90 0 0" position="0 0.06 -20"></a-plane>
+            <!-- Road center line -->
+            <a-plane geometry="primitive: plane; width: 0.2; height: 25"
+                     material="color: #ffff00"
+                     rotation="-90 0 0" position="0 0.07 -20"></a-plane>
+
+            <!-- Road to Furniture (East) -->
+            <a-plane geometry="primitive: plane; width: 4; height: 25"
+                     material="color: #555; roughness: 0.9"
+                     rotation="-90 90 0" position="20 0.06 0"></a-plane>
+            <a-plane geometry="primitive: plane; width: 0.2; height: 25"
+                     material="color: #ffff00"
+                     rotation="-90 90 0" position="20 0.07 0"></a-plane>
+
+            <!-- Road to Vehicle (South) -->
+            <a-plane geometry="primitive: plane; width: 4; height: 25"
+                     material="color: #555; roughness: 0.9"
+                     rotation="-90 0 0" position="0 0.06 20"></a-plane>
+            <a-plane geometry="primitive: plane; width: 0.2; height: 25"
+                     material="color: #ffff00"
+                     rotation="-90 0 0" position="0 0.07 20"></a-plane>
+
+            <!-- Road to Miscellaneous (West) -->
+            <a-plane geometry="primitive: plane; width: 4; height: 25"
+                     material="color: #555; roughness: 0.9"
+                     rotation="-90 90 0" position="-20 0.06 0"></a-plane>
+            <a-plane geometry="primitive: plane; width: 0.2; height: 25"
+                     material="color: #ffff00"
+                     rotation="-90 90 0" position="-20 0.07 0"></a-plane>
+
+            <!-- ======= CONNECTING PATHWAYS (diagonal) ======= -->
+            <!-- NE path: Clothing <-> Furniture -->
+            <a-plane geometry="primitive: plane; width: 2; height: 35"
+                     material="color: #c8b08a; roughness: 0.9"
+                     rotation="-90 45 0" position="16 0.04 -16"></a-plane>
+            <!-- SE path: Furniture <-> Vehicle -->
+            <a-plane geometry="primitive: plane; width: 2; height: 35"
+                     material="color: #c8b08a; roughness: 0.9"
+                     rotation="-90 -45 0" position="16 0.04 16"></a-plane>
+            <!-- SW path: Vehicle <-> Miscellaneous -->
+            <a-plane geometry="primitive: plane; width: 2; height: 35"
+                     material="color: #c8b08a; roughness: 0.9"
+                     rotation="-90 45 0" position="-16 0.04 16"></a-plane>
+            <!-- NW path: Miscellaneous <-> Clothing -->
+            <a-plane geometry="primitive: plane; width: 2; height: 35"
+                     material="color: #c8b08a; roughness: 0.9"
+                     rotation="-90 -45 0" position="-16 0.04 -16"></a-plane>
+
+            <!-- ======= BUILDING 1: CLOTHING STORE (North) ======= -->
+            <a-entity id="building-clothing" position="0 0 -35">
+                <!-- Foundation -->
+                <a-box geometry="primitive: box; width: 14; height: 0.3; depth: 12"
+                       material="color: #888" position="0 0.15 0"></a-box>
+                <!-- Main walls -->
+                <a-box geometry="primitive: box; width: 14; height: 6; depth: 0.3"
+                       material="color: #c744ff" position="0 3.15 -6"></a-box>
+                <a-box geometry="primitive: box; width: 14; height: 6; depth: 0.3"
+                       material="color: #c744ff" position="0 3.15 6"></a-box>
+                <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 12"
+                       material="color: #b030e0" position="-7 3.15 0"></a-box>
+                <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 12"
+                       material="color: #b030e0" position="7 3.15 0"></a-box>
+                <!-- Roof -->
+                <a-box geometry="primitive: box; width: 15; height: 0.4; depth: 13"
+                       material="color: #9d2eff" position="0 6.35 0"></a-box>
+                <!-- Sign -->
+                <a-text value="CLOTHING STORE" position="0 5.5 6.2" align="center"
+                        color="#ffffff" scale="2.5 2.5 2.5" side="double"></a-text>
+                <a-text value="👗 Fashion & Apparel" position="0 4.2 6.2" align="center"
+                        color="#ffff00" scale="1.2 1.2 1.2" side="double"></a-text>
+                <!-- Entrance (open doorway) -->
+                <a-text value="WALK IN" position="0 3.5 6.2" align="center"
+                        color="#00ff64" scale="1 1 1" side="double"></a-text>
+                <!-- Glow around door -->
+                <a-box geometry="primitive: box; width: 3; height: 4; depth: 0.1"
+                       material="color: #00ff64; transparent: true; opacity: 0.15"
+                       position="0 2.2 6.3"></a-box>
+                <!-- Decorative mannequin silhouettes -->
+                <a-cylinder geometry="primitive: cylinder; radius: 0.3; height: 1.5"
+                            material="color: #ff69b4" position="-3 1 6.3"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 0.25"
+                          material="color: #ffdbac" position="-3 1.85 6.3"></a-sphere>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.3; height: 1.5"
+                            material="color: #4488ff" position="3 1 6.3"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 0.25"
+                          material="color: #ffdbac" position="3 1.85 6.3"></a-sphere>
+            </a-entity>
+
+            <!-- ======= BUILDING 2: FURNITURE STORE (East) ======= -->
+            <a-entity id="building-furniture" position="35 0 0">
+                <!-- Foundation -->
+                <a-box geometry="primitive: box; width: 12; height: 0.3; depth: 14"
+                       material="color: #888" position="0 0.15 0"></a-box>
+                <!-- Main walls -->
+                <a-box geometry="primitive: box; width: 12; height: 6; depth: 0.3"
+                       material="color: #d4944a" position="0 3.15 -7"></a-box>
+                <a-box geometry="primitive: box; width: 12; height: 6; depth: 0.3"
+                       material="color: #d4944a" position="0 3.15 7"></a-box>
+                <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 14"
+                       material="color: #c07830" position="-6 3.15 0"></a-box>
+                <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 14"
+                       material="color: #c07830" position="6 3.15 0"></a-box>
+                <!-- Roof -->
+                <a-box geometry="primitive: box; width: 13; height: 0.4; depth: 15"
+                       material="color: #8B4513" position="0 6.35 0"></a-box>
+                <!-- Sign -->
+                <a-text value="FURNITURE STORE" position="-6.2 5.5 0" align="center"
+                        color="#ffffff" scale="2.5 2.5 2.5" rotation="0 90 0" side="double"></a-text>
+                <a-text value="🛋️ Home & Living" position="-6.2 4.2 0" align="center"
+                        color="#ffff00" scale="1.2 1.2 1.2" rotation="0 90 0" side="double"></a-text>
+                <!-- Entrance (open doorway) -->
+                <a-text value="WALK IN" position="-6.2 3.5 0" align="center"
+                        color="#00ff64" scale="1 1 1" rotation="0 90 0" side="double"></a-text>
+                <a-box geometry="primitive: box; width: 0.1; height: 4; depth: 3"
+                       material="color: #00ff64; transparent: true; opacity: 0.15"
+                       position="-6.3 2.2 0"></a-box>
+                <!-- Decorative chair outside -->
+                <a-box geometry="primitive: box; width: 1; height: 0.8; depth: 1"
+                       material="color: #8B4513" position="-3 0.5 6.5"></a-box>
+                <a-box geometry="primitive: box; width: 1; height: 0.6; depth: 0.2"
+                       material="color: #8B4513" position="-3 1.1 6"></a-box>
+            </a-entity>
+
+            <!-- ======= BUILDING 3: VEHICLE SHOWROOM (South) ======= -->
+            <a-entity id="building-vehicle" position="0 0 35">
+                <!-- Foundation -->
+                <a-box geometry="primitive: box; width: 16; height: 0.3; depth: 14"
+                       material="color: #888" position="0 0.15 0"></a-box>
+                <!-- Main walls -->
+                <a-box geometry="primitive: box; width: 16; height: 6; depth: 0.3"
+                       material="color: #3a3a5a" position="0 3.15 -7"></a-box>
+                <a-box geometry="primitive: box; width: 16; height: 6; depth: 0.3"
+                       material="color: #3a3a5a" position="0 3.15 7"></a-box>
+                <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 14"
+                       material="color: #2a2a4a" position="-8 3.15 0"></a-box>
+                <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 14"
+                       material="color: #2a2a4a" position="8 3.15 0"></a-box>
+                <!-- Roof -->
+                <a-box geometry="primitive: box; width: 17; height: 0.4; depth: 15"
+                       material="color: #2a2a3a" position="0 6.35 0"></a-box>
+                <!-- Sign -->
+                <a-text value="VEHICLE SHOWROOM" position="0 5.5 -7.2" align="center"
+                        color="#ffffff" scale="2.5 2.5 2.5" side="double"></a-text>
+                <a-text value="🚗 Cars & Rides" position="0 4.2 -7.2" align="center"
+                        color="#ff4444" scale="1.2 1.2 1.2" side="double"></a-text>
+                <!-- Entrance (open doorway) -->
+                <a-text value="WALK IN" position="0 3.5 -7.2" align="center"
+                        color="#00ff64" scale="1 1 1" side="double"></a-text>
+                <a-box geometry="primitive: box; width: 3.5; height: 4.5; depth: 0.1"
+                       material="color: #00ff64; transparent: true; opacity: 0.15"
+                       position="0 2.4 -7.3"></a-box>
+            </a-entity>
+
+            <!-- ======= BUILDING 4: MISCELLANEOUS STORE (West) ======= -->
+            <a-entity id="building-misc" position="-35 0 0">
+                <!-- Foundation -->
+                <a-box geometry="primitive: box; width: 12; height: 0.3; depth: 14"
+                       material="color: #888" position="0 0.15 0"></a-box>
+                <!-- Main walls -->
+                <a-box geometry="primitive: box; width: 12; height: 6; depth: 0.3"
+                       material="color: #2a8a4a" position="0 3.15 -7"></a-box>
+                <a-box geometry="primitive: box; width: 12; height: 6; depth: 0.3"
+                       material="color: #2a8a4a" position="0 3.15 7"></a-box>
+                <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 14"
+                       material="color: #1a7a3a" position="-6 3.15 0"></a-box>
+                <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 14"
+                       material="color: #1a7a3a" position="6 3.15 0"></a-box>
+                <!-- Roof -->
+                <a-box geometry="primitive: box; width: 13; height: 0.4; depth: 15"
+                       material="color: #1a6a2a" position="0 6.35 0"></a-box>
+                <!-- Sign -->
+                <a-text value="MISCELLANEOUS" position="6.2 5.5 0" align="center"
+                        color="#ffffff" scale="2.5 2.5 2.5" rotation="0 -90 0" side="double"></a-text>
+                <a-text value="🎁 Gadgets & More" position="6.2 4.2 0" align="center"
+                        color="#ffff00" scale="1.2 1.2 1.2" rotation="0 -90 0" side="double"></a-text>
+                <!-- Entrance (open doorway) -->
+                <a-text value="WALK IN" position="6.2 3.5 0" align="center"
+                        color="#00ff64" scale="1 1 1" rotation="0 -90 0" side="double"></a-text>
+                <a-box geometry="primitive: box; width: 0.1; height: 4; depth: 3"
+                       material="color: #00ff64; transparent: true; opacity: 0.15"
+                       position="6.3 2.2 0"></a-box>
+            </a-entity>
+
+            <!-- ======= DIRECTION SIGNS ======= -->
+            <!-- Sign post center -->
+            <a-cylinder geometry="primitive: cylinder; radius: 0.15; height: 4"
+                        material="color: #654321" position="5 2 5"></a-cylinder>
+            <a-entity position="5 3.5 5">
+                <a-box geometry="primitive: box; width: 3; height: 0.5; depth: 0.1"
+                       material="color: #c744ff" position="0 0 0" rotation="0 0 0"></a-box>
+                <a-text value="CLOTHING ↑" position="0 0 0.06" align="center" color="#fff" scale="0.9 0.9 0.9"></a-text>
+            </a-entity>
+            <a-entity position="5 3 5">
+                <a-box geometry="primitive: box; width: 3; height: 0.5; depth: 0.1"
+                       material="color: #d4944a" position="0 0 0" rotation="0 -90 0"></a-box>
+                <a-text value="FURNITURE →" position="0 0 0.06" align="center" color="#fff" scale="0.9 0.9 0.9" rotation="0 -90 0"></a-text>
+            </a-entity>
+            <a-entity position="5 2.5 5">
+                <a-box geometry="primitive: box; width: 3; height: 0.5; depth: 0.1"
+                       material="color: #3a3a5a" position="0 0 0" rotation="0 180 0"></a-box>
+                <a-text value="VEHICLES ↓" position="0 0 0.06" align="center" color="#fff" scale="0.9 0.9 0.9" rotation="0 180 0"></a-text>
+            </a-entity>
+            <a-entity position="5 2 5">
+                <a-box geometry="primitive: box; width: 3; height: 0.5; depth: 0.1"
+                       material="color: #2a8a4a" position="0 0 0" rotation="0 90 0"></a-box>
+                <a-text value="← MISC" position="0 0 0.06" align="center" color="#fff" scale="0.9 0.9 0.9" rotation="0 90 0"></a-text>
+            </a-entity>
+
+            <!-- Street lamps -->
+            <a-entity position="4 0 -12">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.1; height: 5" material="color: #333" position="0 2.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 0.4" material="color: #ffee88; emissive: #ffee44; emissiveIntensity: 0.6" position="0 5 0"></a-sphere>
+                <a-light type="point" intensity="0.4" distance="15" color="#ffee88" position="0 5 0"></a-light>
+            </a-entity>
+            <a-entity position="-4 0 -12">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.1; height: 5" material="color: #333" position="0 2.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 0.4" material="color: #ffee88; emissive: #ffee44; emissiveIntensity: 0.6" position="0 5 0"></a-sphere>
+                <a-light type="point" intensity="0.4" distance="15" color="#ffee88" position="0 5 0"></a-light>
+            </a-entity>
+            <a-entity position="12 0 4">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.1; height: 5" material="color: #333" position="0 2.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 0.4" material="color: #ffee88; emissive: #ffee44; emissiveIntensity: 0.6" position="0 5 0"></a-sphere>
+                <a-light type="point" intensity="0.4" distance="15" color="#ffee88" position="0 5 0"></a-light>
+            </a-entity>
+            <a-entity position="-12 0 -4">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.1; height: 5" material="color: #333" position="0 2.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 0.4" material="color: #ffee88; emissive: #ffee44; emissiveIntensity: 0.6" position="0 5 0"></a-sphere>
+                <a-light type="point" intensity="0.4" distance="15" color="#ffee88" position="0 5 0"></a-light>
+            </a-entity>
+            <a-entity position="4 0 12">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.1; height: 5" material="color: #333" position="0 2.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 0.4" material="color: #ffee88; emissive: #ffee44; emissiveIntensity: 0.6" position="0 5 0"></a-sphere>
+                <a-light type="point" intensity="0.4" distance="15" color="#ffee88" position="0 5 0"></a-light>
+            </a-entity>
+            <a-entity position="-4 0 12">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.1; height: 5" material="color: #333" position="0 2.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 0.4" material="color: #ffee88; emissive: #ffee44; emissiveIntensity: 0.6" position="0 5 0"></a-sphere>
+                <a-light type="point" intensity="0.4" distance="15" color="#ffee88" position="0 5 0"></a-light>
+            </a-entity>
+
+            <!-- Benches along paths -->
+            <a-entity position="3 0 -6">
+                <a-box geometry="primitive: box; width: 2; height: 0.6; depth: 0.6" material="color: #8B4513" position="0 0.3 0"></a-box>
+                <a-box geometry="primitive: box; width: 2; height: 0.5; depth: 0.1" material="color: #8B4513" position="0 0.8 -0.25"></a-box>
+            </a-entity>
+            <a-entity position="-3 0 6">
+                <a-box geometry="primitive: box; width: 2; height: 0.6; depth: 0.6" material="color: #8B4513" position="0 0.3 0"></a-box>
+                <a-box geometry="primitive: box; width: 2; height: 0.5; depth: 0.1" material="color: #8B4513" position="0 0.8 0.25"></a-box>
+            </a-entity>
+
+            <!-- Trees -->
+            <a-entity position="10 0 -10">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.3; height: 3" material="color: #654321" position="0 1.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 2" material="color: #228B22" position="0 4 0"></a-sphere>
+            </a-entity>
+            <a-entity position="-10 0 10">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.3; height: 3" material="color: #654321" position="0 1.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 2" material="color: #228B22" position="0 4 0"></a-sphere>
+            </a-entity>
+            <a-entity position="10 0 10">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.3; height: 3" material="color: #654321" position="0 1.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 1.8" material="color: #2E8B57" position="0 3.8 0"></a-sphere>
+            </a-entity>
+            <a-entity position="-10 0 -10">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.3; height: 3" material="color: #654321" position="0 1.5 0"></a-cylinder>
+                <a-sphere geometry="primitive: sphere; radius: 1.8" material="color: #2E8B57" position="0 3.8 0"></a-sphere>
             </a-entity>
         </a-entity>
-        
-        <!-- STALL 2: Fashion Boutique -->
-        <a-entity id="stall-2" position="-15 0 0">
-            <!-- Stall structure -->
-            <a-box geometry="primitive: box; width: 8; height: 3; depth: 8"
-                   material="color: #c744ff"
-                   position="0 1.5 0"
-                   shadow="cast: true; receive: true">
+
+        <!-- ============================================================ -->
+        <!-- INTERIOR: CLOTHING STORE (offset at x=500)                   -->
+        <!-- ============================================================ -->
+        <a-entity id="interior-clothing" position="0 0 -35" visible="false">
+            <!-- Floor -->
+            <a-plane geometry="primitive: plane; width: 20; height: 20"
+                     material="color: #e8d8c8; roughness: 0.8"
+                     rotation="-90 0 0" position="0 0.01 0"></a-plane>
+            <!-- Ceiling -->
+            <a-plane geometry="primitive: plane; width: 20; height: 20"
+                     material="color: #f5f0eb; side: double"
+                     rotation="90 0 0" position="0 5 0"></a-plane>
+            <!-- Walls -->
+            <a-box geometry="primitive: box; width: 20; height: 5; depth: 0.3"
+                   material="color: #e0c0e8" position="0 2.5 -10"></a-box>
+            <a-box geometry="primitive: box; width: 20; height: 5; depth: 0.3"
+                   material="color: #e0c0e8" position="0 2.5 10"></a-box>
+            <a-box geometry="primitive: box; width: 0.3; height: 5; depth: 20"
+                   material="color: #d8b0e0" position="-10 2.5 0"></a-box>
+            <a-box geometry="primitive: box; width: 0.3; height: 5; depth: 20"
+                   material="color: #d8b0e0" position="10 2.5 0"></a-box>
+            <!-- Interior lights -->
+            <a-light type="point" intensity="0.8" distance="25" color="#fff5ee" position="0 4.5 0"></a-light>
+            <a-light type="point" intensity="0.4" distance="15" color="#fff5ee" position="-5 4.5 -5"></a-light>
+            <a-light type="point" intensity="0.4" distance="15" color="#fff5ee" position="5 4.5 5"></a-light>
+            <!-- Store title -->
+            <a-text value="CLOTHING STORE" position="0 4 -9.8" align="center"
+                    color="#6a1b9a" scale="2.5 2.5 2.5"></a-text>
+
+            <!-- Shelves & Products -->
+            <!-- Shelf 1: Left wall -->
+            <a-box geometry="primitive: box; width: 0.5; height: 3; depth: 6"
+                   material="color: #c8a882" position="-9.5 1.5 -4"></a-box>
+            <!-- T-Shirt -->
+            <a-box class="product clickable"
+                   data-product="T-Shirt" data-price="25"
+                   data-description="Comfortable cotton t-shirt available in multiple colors"
+                   geometry="primitive: box; width: 0.8; height: 0.8; depth: 0.3"
+                   material="color: #ff6b6b" position="-9 2.5 -6">
+                <a-text value="T-Shirt\n$25" position="0 0 0.2" align="center" color="#fff" scale="0.6 0.6 0.6"></a-text>
             </a-box>
-            
-            <!-- Roof -->
-            <a-cone geometry="primitive: cone; radiusBottom: 5; radiusTop: 0; height: 2"
-                    material="color: #9d2eff"
-                    position="0 4 0"
-                    shadow="cast: true">
-            </a-cone>
-            
-            <!-- Store sign -->
-            <a-text value="FASHION BOUTIQUE" 
-                    position="0 4.5 -5"
-                    align="center"
-                    color="#ffff00"
-                    scale="2 2 2"
-                    material="emissive: #ff00ff">
-            </a-text>
-            
-            <!-- Price sign -->
-            <a-text value="Price: $4000/month" 
-                    position="0 0.5 -5"
-                    align="center"
-                    color="#fff"
-                    scale="1.5 1.5 1.5">
-            </a-text>
-            
-            <!-- Product displays -->
-            <a-cylinder class="product"
-                        data-product="Designer Jacket"
-                        data-price="450"
-                        data-description="Premium designer leather jacket"
-                        geometry="primitive: cylinder; radius: 0.5; height: 1.5"
-                        material="color: #8B4513"
-                        position="-2 2 -2"
-                        shadow="cast: true">
-                <a-text value="JACKET" position="0 0.8 0.7" align="center" color="#ffff00" scale="0.8 0.8 0.8"></a-text>
+            <!-- Jeans -->
+            <a-box class="product clickable"
+                   data-product="Jeans" data-price="60"
+                   data-description="Classic blue denim jeans with modern fit"
+                   geometry="primitive: box; width: 0.6; height: 1.2; depth: 0.3"
+                   material="color: #1a5276" position="-9 2.5 -4">
+                <a-text value="Jeans\n$60" position="0 0 0.2" align="center" color="#fff" scale="0.6 0.6 0.6"></a-text>
+            </a-box>
+            <!-- Jacket -->
+            <a-box class="product clickable"
+                   data-product="Leather Jacket" data-price="180"
+                   data-description="Premium leather jacket with zip closure"
+                   geometry="primitive: box; width: 1; height: 1; depth: 0.4"
+                   material="color: #2c1810" position="-9 2.5 -2">
+                <a-text value="Jacket\n$180" position="0 0 0.25" align="center" color="#ffff00" scale="0.6 0.6 0.6"></a-text>
+            </a-box>
+
+            <!-- Shelf 2: Right wall -->
+            <a-box geometry="primitive: box; width: 0.5; height: 3; depth: 6"
+                   material="color: #c8a882" position="9.5 1.5 -4"></a-box>
+            <!-- Sneakers -->
+            <a-box class="product clickable"
+                   data-product="Sneakers" data-price="120"
+                   data-description="Sporty sneakers with cushioned sole"
+                   geometry="primitive: box; width: 0.8; height: 0.4; depth: 0.5"
+                   material="color: #e74c3c" position="9 1.5 -6">
+                <a-text value="Sneakers\n$120" position="0 0.3 0.3" align="center" color="#fff" scale="0.5 0.5 0.5"></a-text>
+            </a-box>
+            <!-- Hat -->
+            <a-cylinder class="product clickable"
+                        data-product="Hat" data-price="35"
+                        data-description="Stylish baseball cap, one size fits all"
+                        geometry="primitive: cylinder; radius: 0.4; height: 0.3"
+                        material="color: #2c3e50" position="9 2.5 -4">
+                <a-text value="Hat $35" position="0 0.2 0.5" align="center" color="#fff" scale="0.5 0.5 0.5"></a-text>
             </a-cylinder>
-            
-            <a-box class="product"
-                   data-product="Handbag"
-                   data-price="850"
-                   data-description="Luxury leather handbag"
-                   geometry="primitive: box; width: 0.8; height: 0.5; depth: 0.3"
-                   material="color: #8B0000"
-                   position="1 2 -2"
-                   shadow="cast: true">
-                <a-text value="BAG" position="0 0.3 0" align="center" color="#ffff00" scale="0.8 0.8 0.8"></a-text>
-            </a-box>
-            
-            <a-box class="product"
-                   data-product="Sneakers"
-                   data-price="280"
-                   data-description="Limited edition high-tech sneakers"
-                   geometry="primitive: box; width: 0.9; height: 0.4; depth: 0.5"
-                   material="color: #FF1493"
-                   position="-2 1.5 0"
-                   shadow="cast: true">
-                <a-text value="SHOES" position="0.45 0.3 0" align="center" color="#fff" scale="0.8 0.8 0.8"></a-text>
-            </a-box>
-            
-            <!-- Staff NPC -->
-            <a-entity id="staff-2" position="2 0 2">
-                <a-box geometry="primitive: box; width: 0.6; height: 1.8; depth: 0.6"
-                       material="color: #ffb6c1">
-                </a-box>
-                <a-sphere geometry="primitive: sphere; radius: 0.4"
-                          material="color: #ffdbac"
-                          position="0 1 0">
-                </a-sphere>
-                <a-text value="Staff: Maria" position="0 1.6 0" align="center" color="#fff" scale="0.8 0.8 0.8"></a-text>
-                <a-text value="Click to chat" position="0 -1 0" align="center" color="#00ff64" scale="0.6 0.6 0.6"></a-text>
-            </a-entity>
-        </a-entity>
-        
-        <!-- STALL 3: Food & Beverages -->
-        <a-entity id="stall-3" position="0 0 -20">
-            <!-- Stall structure -->
-            <a-box geometry="primitive: box; width: 8; height: 3; depth: 8"
-                   material="color: #ffa500"
-                   position="0 1.5 0"
-                   shadow="cast: true; receive: true">
-            </a-box>
-            
-            <!-- Roof -->
-            <a-cone geometry="primitive: cone; radiusBottom: 5; radiusTop: 0; height: 2"
-                    material="color: #ff8c00"
-                    position="0 4 0"
-                    shadow="cast: true">
-            </a-cone>
-            
-            <!-- Store sign -->
-            <a-text value="FOOD COURT" 
-                    position="0 4.5 -5"
-                    align="center"
-                    color="#000"
-                    scale="2 2 2"
-                    material="emissive: #ffff00">
-            </a-text>
-            
-            <!-- Price sign -->
-            <a-text value="Price: $3500/month" 
-                    position="0 0.5 -5"
-                    align="center"
-                    color="#fff"
-                    scale="1.5 1.5 1.5">
-            </a-text>
-            
-            <!-- Product displays -->
-            <a-box class="product"
-                   data-product="Coffee Machine"
-                   data-price="350"
-                   data-description="Professional espresso coffee machine"
-                   geometry="primitive: box; width: 0.8; height: 1.2; depth: 0.6"
-                   material="color: #654321"
-                   position="-2 2 -2"
-                   shadow="cast: true">
-                <a-text value="COFFEE" position="0 0.7 0" align="center" color="#ffff00" scale="0.8 0.8 0.8"></a-text>
-            </a-box>
-            
-            <a-cylinder class="product"
-                        data-product="Fresh Smoothies"
-                        data-price="15"
-                        data-description="Daily fresh organic fruit smoothies"
-                        geometry="primitive: cylinder; radius: 0.4; height: 0.6"
-                        material="color: #ff69b4"
-                        position="1 2 -2"
-                        shadow="cast: true">
-                <a-text value="SMOOTHIE" position="0 0.4 0.5" align="center" color="#fff" scale="0.7 0.7 0.7"></a-text>
+            <!-- Dress -->
+            <a-cylinder class="product clickable"
+                        data-product="Summer Dress" data-price="85"
+                        data-description="Elegant floral summer dress"
+                        geometry="primitive: cylinder; radius: 0.4; height: 1.4"
+                        material="color: #f39c12" position="9 2 -2">
+                <a-text value="Dress\n$85" position="0 0 0.5" align="center" color="#fff" scale="0.5 0.5 0.5"></a-text>
             </a-cylinder>
-            
-            <a-box class="product"
-                   data-product="Bakery Selection"
-                   data-price="8"
-                   data-description="Fresh pastries and baked goods"
-                   geometry="primitive: box; width: 1.2; height: 0.3; depth: 0.8"
-                   material="color: #d2691e"
-                   position="-2 1.5 0"
-                   shadow="cast: true">
-                <a-text value="BAKERY" position="0 0.2 0.4" align="center" color="#fff" scale="0.8 0.8 0.8"></a-text>
+
+            <!-- Center display tables -->
+            <a-box geometry="primitive: box; width: 3; height: 0.8; depth: 2"
+                   material="color: #deb887" position="-3 0.4 2"></a-box>
+            <!-- Scarf on table -->
+            <a-box class="product clickable"
+                   data-product="Silk Scarf" data-price="45"
+                   data-description="Luxurious silk scarf with vibrant pattern"
+                   geometry="primitive: box; width: 1; height: 0.1; depth: 1"
+                   material="color: #9b59b6" position="-3 0.9 2">
+                <a-text value="Scarf $45" position="0 0.1 0" align="center" color="#fff" scale="0.5 0.5 0.5"></a-text>
             </a-box>
-            
+
+            <a-box geometry="primitive: box; width: 3; height: 0.8; depth: 2"
+                   material="color: #deb887" position="3 0.4 2"></a-box>
+            <!-- Sunglasses on table -->
+            <a-box class="product clickable"
+                   data-product="Sunglasses" data-price="55"
+                   data-description="UV-protected designer sunglasses"
+                   geometry="primitive: box; width: 0.5; height: 0.2; depth: 0.2"
+                   material="color: #1a1a1a" position="3 0.9 2">
+                <a-text value="Shades $55" position="0 0.2 0" align="center" color="#fff" scale="0.5 0.5 0.5"></a-text>
+            </a-box>
+
             <!-- Staff NPC -->
-            <a-entity id="staff-3" position="2 0 2">
-                <a-box geometry="primitive: box; width: 0.6; height: 1.8; depth: 0.6"
-                       material="color: #ff9999">
-                </a-box>
-                <a-sphere geometry="primitive: sphere; radius: 0.4"
-                          material="color: #ffdbac"
-                          position="0 1 0">
-                </a-sphere>
-                <a-text value="Staff: Dave" position="0 1.6 0" align="center" color="#fff" scale="0.8 0.8 0.8"></a-text>
-                <a-text value="Click to chat" position="0 -1 0" align="center" color="#00ff64" scale="0.6 0.6 0.6"></a-text>
+            <a-entity id="staff-clothing" position="4 0 -5">
+                <a-box geometry="primitive: box; width: 0.6; height: 1.6; depth: 0.4" material="color: #c744ff" position="0 0.8 0"></a-box>
+                <a-sphere geometry="primitive: sphere; radius: 0.3" material="color: #ffdbac" position="0 1.8 0"></a-sphere>
+                <a-text value="Staff: Emma" position="0 2.3 0" align="center" color="#333" scale="0.7 0.7 0.7"></a-text>
             </a-entity>
-        </a-entity>
-        
-        <!-- STALL 4: Tech Gadgets -->
-        <a-entity id="stall-4" position="0 0 20">
-            <!-- Stall structure -->
-            <a-box geometry="primitive: box; width: 8; height: 3; depth: 8"
-                   material="color: #00ccff"
-                   position="0 1.5 0"
-                   shadow="cast: true; receive: true">
+
+            <!-- EXIT DOOR -->
+            <a-box class="exit-door clickable" data-building="clothing"
+                   geometry="primitive: box; width: 2; height: 3.5; depth: 0.4"
+                   material="color: #cc0000; emissive: #880000; emissiveIntensity: 0.3"
+                   position="0 1.75 9.8">
+                <a-text value="EXIT" position="0 0 0.25" align="center" color="#fff" scale="1.5 1.5 1.5"></a-text>
             </a-box>
-            
-            <!-- Roof -->
-            <a-cone geometry="primitive: cone; radiusBottom: 5; radiusTop: 0; height: 2"
-                    material="color: #0099cc"
-                    position="0 4 0"
-                    shadow="cast: true">
-            </a-cone>
-            
-            <!-- Store sign -->
-            <a-text value="GADGET ZONE" 
-                    position="0 4.5 -5"
-                    align="center"
-                    color="#000"
-                    scale="2 2 2"
-                    material="emissive: #00ffff">
-            </a-text>
-            
-            <!-- Price sign -->
-            <a-text value="Price: $4500/month" 
-                    position="0 0.5 -5"
-                    align="center"
-                    color="#fff"
-                    scale="1.5 1.5 1.5">
-            </a-text>
-            
-            <!-- Product displays -->
-            <a-cylinder class="product"
-                        data-product="VR Headset"
-                        data-price="1299"
-                        data-description="Next-gen virtual reality headset"
-                        geometry="primitive: cylinder; radius: 0.6; height: 0.8"
+        </a-entity>
+
+        <!-- ============================================================ -->
+        <!-- INTERIOR: FURNITURE STORE (offset at x=500, z=500)           -->
+        <!-- ============================================================ -->
+        <a-entity id="interior-furniture" position="35 0 0" visible="false">
+            <!-- Floor -->
+            <a-plane geometry="primitive: plane; width: 22; height: 22"
+                     material="color: #c8a882; roughness: 0.8"
+                     rotation="-90 0 0" position="0 0.01 0"></a-plane>
+            <!-- Ceiling -->
+            <a-plane geometry="primitive: plane; width: 22; height: 22"
+                     material="color: #f0e8d8; side: double"
+                     rotation="90 0 0" position="0 5 0"></a-plane>
+            <!-- Walls -->
+            <a-box geometry="primitive: box; width: 22; height: 5; depth: 0.3"
+                   material="color: #dcc8a8" position="0 2.5 -11"></a-box>
+            <a-box geometry="primitive: box; width: 22; height: 5; depth: 0.3"
+                   material="color: #dcc8a8" position="0 2.5 11"></a-box>
+            <a-box geometry="primitive: box; width: 0.3; height: 5; depth: 22"
+                   material="color: #d4b890" position="-11 2.5 0"></a-box>
+            <a-box geometry="primitive: box; width: 0.3; height: 5; depth: 22"
+                   material="color: #d4b890" position="11 2.5 0"></a-box>
+            <!-- Interior lights -->
+            <a-light type="point" intensity="0.8" distance="25" color="#fff5ee" position="0 4.5 0"></a-light>
+            <a-light type="point" intensity="0.4" distance="15" color="#fff5ee" position="-6 4.5 -6"></a-light>
+            <a-light type="point" intensity="0.4" distance="15" color="#fff5ee" position="6 4.5 6"></a-light>
+            <!-- Store title -->
+            <a-text value="FURNITURE STORE" position="0 4 -10.8" align="center"
+                    color="#8B4513" scale="2.5 2.5 2.5"></a-text>
+
+            <!-- Products -->
+            <!-- Sofa -->
+            <a-entity class="product clickable" data-product="Sofa" data-price="800"
+                      data-description="3-seater premium fabric sofa in beige"
+                      position="-6 0 -6">
+                <a-box geometry="primitive: box; width: 3; height: 0.8; depth: 1.2" material="color: #c19a6b" position="0 0.4 0"></a-box>
+                <a-box geometry="primitive: box; width: 3; height: 0.6; depth: 0.3" material="color: #a0784c" position="0 1 -0.45"></a-box>
+                <a-box geometry="primitive: box; width: 0.5; height: 0.6; depth: 1.2" material="color: #a0784c" position="-1.25 1 0"></a-box>
+                <a-box geometry="primitive: box; width: 0.5; height: 0.6; depth: 1.2" material="color: #a0784c" position="1.25 1 0"></a-box>
+                <a-text value="Sofa - $800" position="0 1.5 0" align="center" color="#8B4513" scale="0.8 0.8 0.8"></a-text>
+            </a-entity>
+
+            <!-- Dining Table -->
+            <a-entity class="product clickable" data-product="Dining Table" data-price="450"
+                      data-description="Solid oak dining table seats 6 people"
+                      position="0 0 0">
+                <a-box geometry="primitive: box; width: 3; height: 0.15; depth: 1.5" material="color: #8B4513" position="0 1.2 0"></a-box>
+                <a-box geometry="primitive: box; width: 0.15; height: 1.2; depth: 0.15" material="color: #654321" position="-1.3 0.6 -0.6"></a-box>
+                <a-box geometry="primitive: box; width: 0.15; height: 1.2; depth: 0.15" material="color: #654321" position="1.3 0.6 -0.6"></a-box>
+                <a-box geometry="primitive: box; width: 0.15; height: 1.2; depth: 0.15" material="color: #654321" position="-1.3 0.6 0.6"></a-box>
+                <a-box geometry="primitive: box; width: 0.15; height: 1.2; depth: 0.15" material="color: #654321" position="1.3 0.6 0.6"></a-box>
+                <a-text value="Table - $450" position="0 1.8 0" align="center" color="#8B4513" scale="0.8 0.8 0.8"></a-text>
+            </a-entity>
+
+            <!-- Chair -->
+            <a-entity class="product clickable" data-product="Chair" data-price="120"
+                      data-description="Ergonomic wooden chair with cushion"
+                      position="5 0 -5">
+                <a-box geometry="primitive: box; width: 0.8; height: 0.1; depth: 0.8" material="color: #a0522d" position="0 0.7 0"></a-box>
+                <a-box geometry="primitive: box; width: 0.1; height: 0.7; depth: 0.1" material="color: #8B4513" position="-0.3 0.35 -0.3"></a-box>
+                <a-box geometry="primitive: box; width: 0.1; height: 0.7; depth: 0.1" material="color: #8B4513" position="0.3 0.35 -0.3"></a-box>
+                <a-box geometry="primitive: box; width: 0.1; height: 0.7; depth: 0.1" material="color: #8B4513" position="-0.3 0.35 0.3"></a-box>
+                <a-box geometry="primitive: box; width: 0.1; height: 0.7; depth: 0.1" material="color: #8B4513" position="0.3 0.35 0.3"></a-box>
+                <a-box geometry="primitive: box; width: 0.8; height: 0.8; depth: 0.1" material="color: #a0522d" position="0 1.1 -0.35"></a-box>
+                <a-text value="Chair - $120" position="0 1.8 0" align="center" color="#8B4513" scale="0.7 0.7 0.7"></a-text>
+            </a-entity>
+
+            <!-- Bookshelf -->
+            <a-entity class="product clickable" data-product="Bookshelf" data-price="350"
+                      data-description="Tall walnut bookshelf with 5 tiers"
+                      position="-7 0 3">
+                <a-box geometry="primitive: box; width: 1.5; height: 3; depth: 0.4" material="color: #5c3317" position="0 1.5 0"></a-box>
+                <a-box geometry="primitive: box; width: 1.3; height: 0.08; depth: 0.35" material="color: #6b3a1f" position="0 0.6 0"></a-box>
+                <a-box geometry="primitive: box; width: 1.3; height: 0.08; depth: 0.35" material="color: #6b3a1f" position="0 1.2 0"></a-box>
+                <a-box geometry="primitive: box; width: 1.3; height: 0.08; depth: 0.35" material="color: #6b3a1f" position="0 1.8 0"></a-box>
+                <a-box geometry="primitive: box; width: 1.3; height: 0.08; depth: 0.35" material="color: #6b3a1f" position="0 2.4 0"></a-box>
+                <a-text value="Bookshelf\n$350" position="0 3.3 0" align="center" color="#8B4513" scale="0.7 0.7 0.7"></a-text>
+            </a-entity>
+
+            <!-- Floor Lamp -->
+            <a-entity class="product clickable" data-product="Floor Lamp" data-price="95"
+                      data-description="Modern LED floor lamp with dimmer"
+                      position="7 0 3">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.08; height: 2.5" material="color: #333" position="0 1.25 0"></a-cylinder>
+                <a-cone geometry="primitive: cone; radiusBottom: 0.5; radiusTop: 0.1; height: 0.5"
+                        material="color: #f5e6cc; emissive: #ffee88; emissiveIntensity: 0.4" position="0 2.7 0"></a-cone>
+                <a-text value="Lamp - $95" position="0 3.3 0" align="center" color="#8B4513" scale="0.7 0.7 0.7"></a-text>
+            </a-entity>
+
+            <!-- Bed -->
+            <a-entity class="product clickable" data-product="King Size Bed" data-price="1200"
+                      data-description="Luxury king size bed with memory foam mattress"
+                      position="5 0 5">
+                <a-box geometry="primitive: box; width: 2.5; height: 0.5; depth: 3" material="color: #8B4513" position="0 0.25 0"></a-box>
+                <a-box geometry="primitive: box; width: 2.3; height: 0.3; depth: 2.8" material="color: #f5f5f5" position="0 0.65 0"></a-box>
+                <a-box geometry="primitive: box; width: 2.5; height: 1; depth: 0.2" material="color: #654321" position="0 0.8 -1.4"></a-box>
+                <a-box geometry="primitive: box; width: 0.8; height: 0.15; depth: 0.6" material="color: #ddd" position="-0.5 0.85 -1"></a-box>
+                <a-box geometry="primitive: box; width: 0.8; height: 0.15; depth: 0.6" material="color: #ddd" position="0.5 0.85 -1"></a-box>
+                <a-text value="Bed - $1200" position="0 1.8 0" align="center" color="#8B4513" scale="0.8 0.8 0.8"></a-text>
+            </a-entity>
+
+            <!-- Staff NPC -->
+            <a-entity id="staff-furniture" position="-3 0 6">
+                <a-box geometry="primitive: box; width: 0.6; height: 1.6; depth: 0.4" material="color: #d4944a" position="0 0.8 0"></a-box>
+                <a-sphere geometry="primitive: sphere; radius: 0.3" material="color: #ffdbac" position="0 1.8 0"></a-sphere>
+                <a-text value="Staff: Robert" position="0 2.3 0" align="center" color="#333" scale="0.7 0.7 0.7"></a-text>
+            </a-entity>
+
+            <!-- EXIT DOOR -->
+            <a-box class="exit-door clickable" data-building="furniture"
+                   geometry="primitive: box; width: 2; height: 3.5; depth: 0.4"
+                   material="color: #cc0000; emissive: #880000; emissiveIntensity: 0.3"
+                   position="0 1.75 10.8">
+                <a-text value="EXIT" position="0 0 0.25" align="center" color="#fff" scale="1.5 1.5 1.5"></a-text>
+            </a-box>
+        </a-entity>
+
+        <!-- ============================================================ -->
+        <!-- INTERIOR: VEHICLE SHOWROOM (offset at x=-500)                -->
+        <!-- ============================================================ -->
+        <a-entity id="interior-vehicle" position="0 0 35" visible="false">
+            <!-- Floor -->
+            <a-plane geometry="primitive: plane; width: 26; height: 22"
+                     material="color: #e0e0e0; roughness: 0.4"
+                     rotation="-90 0 0" position="0 0.01 0"></a-plane>
+            <!-- Ceiling -->
+            <a-plane geometry="primitive: plane; width: 26; height: 22"
+                     material="color: #f0f0f0; side: double"
+                     rotation="90 0 0" position="0 6 0"></a-plane>
+            <!-- Walls -->
+            <a-box geometry="primitive: box; width: 26; height: 6; depth: 0.3"
+                   material="color: #cccccc" position="0 3 -11"></a-box>
+            <a-box geometry="primitive: box; width: 26; height: 6; depth: 0.3"
+                   material="color: #cccccc" position="0 3 11"></a-box>
+            <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 22"
+                   material="color: #bbb" position="-13 3 0"></a-box>
+            <a-box geometry="primitive: box; width: 0.3; height: 6; depth: 22"
+                   material="color: #bbb" position="13 3 0"></a-box>
+            <!-- Interior lights -->
+            <a-light type="point" intensity="1" distance="30" color="#ffffff" position="0 5.5 0"></a-light>
+            <a-light type="point" intensity="0.5" distance="20" color="#ffffff" position="-6 5.5 -5"></a-light>
+            <a-light type="point" intensity="0.5" distance="20" color="#ffffff" position="6 5.5 5"></a-light>
+            <!-- Store title -->
+            <a-text value="VEHICLE SHOWROOM" position="0 5 -10.8" align="center"
+                    color="#cc0000" scale="2.5 2.5 2.5"></a-text>
+
+            <!-- Products -->
+            <!-- Sedan Car -->
+            <a-entity class="product clickable" data-product="Sedan Car" data-price="25000"
+                      data-description="4-door family sedan with automatic transmission, fuel efficient"
+                      position="-6 0 -4">
+                <!-- Body -->
+                <a-box geometry="primitive: box; width: 4; height: 1; depth: 1.8" material="color: #c0392b" position="0 0.8 0"></a-box>
+                <a-box geometry="primitive: box; width: 2.5; height: 0.8; depth: 1.6" material="color: #e74c3c" position="0 1.7 0"></a-box>
+                <!-- Wheels -->
+                <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.2" material="color: #222" position="-1.2 0.35 -1" rotation="90 0 0"></a-cylinder>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.2" material="color: #222" position="1.2 0.35 -1" rotation="90 0 0"></a-cylinder>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.2" material="color: #222" position="-1.2 0.35 1" rotation="90 0 0"></a-cylinder>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.2" material="color: #222" position="1.2 0.35 1" rotation="90 0 0"></a-cylinder>
+                <a-text value="Sedan - $25,000" position="0 2.8 0" align="center" color="#c0392b" scale="0.8 0.8 0.8"></a-text>
+            </a-entity>
+
+            <!-- SUV -->
+            <a-entity class="product clickable" data-product="SUV" data-price="45000"
+                      data-description="Full-size SUV with 4WD, leather seats, panoramic sunroof"
+                      position="6 0 -4">
+                <a-box geometry="primitive: box; width: 4.5; height: 1.5; depth: 2" material="color: #2c3e50" position="0 1 0"></a-box>
+                <a-box geometry="primitive: box; width: 3; height: 1; depth: 1.8" material="color: #34495e" position="0 2.2 0"></a-box>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.4; height: 0.25" material="color: #222" position="-1.5 0.4 -1.1" rotation="90 0 0"></a-cylinder>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.4; height: 0.25" material="color: #222" position="1.5 0.4 -1.1" rotation="90 0 0"></a-cylinder>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.4; height: 0.25" material="color: #222" position="-1.5 0.4 1.1" rotation="90 0 0"></a-cylinder>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.4; height: 0.25" material="color: #222" position="1.5 0.4 1.1" rotation="90 0 0"></a-cylinder>
+                <a-text value="SUV - $45,000" position="0 3.3 0" align="center" color="#2c3e50" scale="0.8 0.8 0.8"></a-text>
+            </a-entity>
+
+            <!-- Motorcycle -->
+            <a-entity class="product clickable" data-product="Motorcycle" data-price="8500"
+                      data-description="Sport motorcycle, 600cc engine, ABS braking system"
+                      position="-6 0 4">
+                <a-box geometry="primitive: box; width: 2; height: 0.6; depth: 0.5" material="color: #1a1a1a" position="0 0.8 0"></a-box>
+                <a-box geometry="primitive: box; width: 0.8; height: 0.6; depth: 0.4" material="color: #e67e22" position="0.3 1.3 0"></a-box>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.15" material="color: #222" position="-0.7 0.35 0" rotation="90 0 0"></a-cylinder>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.15" material="color: #222" position="0.7 0.35 0" rotation="90 0 0"></a-cylinder>
+                <a-text value="Motorcycle\n$8,500" position="0 2 0" align="center" color="#e67e22" scale="0.7 0.7 0.7"></a-text>
+            </a-entity>
+
+            <!-- Bicycle -->
+            <a-entity class="product clickable" data-product="Bicycle" data-price="350"
+                      data-description="Lightweight mountain bicycle with 21 gears"
+                      position="0 0 5">
+                <a-box geometry="primitive: box; width: 1.2; height: 0.1; depth: 0.1" material="color: #27ae60" position="0 0.8 0" rotation="0 0 -15"></a-box>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.08" material="color: #222" position="-0.5 0.5 0" rotation="90 0 0"></a-cylinder>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.35; height: 0.08" material="color: #222" position="0.5 0.5 0" rotation="90 0 0"></a-cylinder>
+                <a-box geometry="primitive: box; width: 0.1; height: 0.5; depth: 0.1" material="color: #27ae60" position="0 1.1 0"></a-box>
+                <a-text value="Bicycle - $350" position="0 1.8 0" align="center" color="#27ae60" scale="0.7 0.7 0.7"></a-text>
+            </a-entity>
+
+            <!-- Electric Scooter -->
+            <a-entity class="product clickable" data-product="Electric Scooter" data-price="600"
+                      data-description="Foldable electric scooter with 25 mile range"
+                      position="6 0 5">
+                <a-box geometry="primitive: box; width: 0.5; height: 0.1; depth: 0.2" material="color: #555" position="0 0.4 0"></a-box>
+                <a-box geometry="primitive: box; width: 0.08; height: 1.2; depth: 0.08" material="color: #555" position="0.2 1 0"></a-box>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.15; height: 0.08" material="color: #222" position="-0.2 0.15 0" rotation="90 0 0"></a-cylinder>
+                <a-cylinder geometry="primitive: cylinder; radius: 0.15; height: 0.08" material="color: #222" position="0.2 0.15 0" rotation="90 0 0"></a-cylinder>
+                <a-text value="Scooter\n$600" position="0 2 0" align="center" color="#555" scale="0.7 0.7 0.7"></a-text>
+            </a-entity>
+
+            <!-- Staff NPC -->
+            <a-entity id="staff-vehicle" position="8 0 0">
+                <a-box geometry="primitive: box; width: 0.6; height: 1.6; depth: 0.4" material="color: #3a3a5a" position="0 0.8 0"></a-box>
+                <a-sphere geometry="primitive: sphere; radius: 0.3" material="color: #ffdbac" position="0 1.8 0"></a-sphere>
+                <a-text value="Staff: Mike" position="0 2.3 0" align="center" color="#333" scale="0.7 0.7 0.7"></a-text>
+            </a-entity>
+
+            <!-- EXIT DOOR -->
+            <a-box class="exit-door clickable" data-building="vehicle"
+                   geometry="primitive: box; width: 2.5; height: 3.5; depth: 0.4"
+                   material="color: #cc0000; emissive: #880000; emissiveIntensity: 0.3"
+                   position="0 1.75 10.8">
+                <a-text value="EXIT" position="0 0 0.25" align="center" color="#fff" scale="1.5 1.5 1.5"></a-text>
+            </a-box>
+        </a-entity>
+
+        <!-- ============================================================ -->
+        <!-- INTERIOR: MISCELLANEOUS STORE (offset at x=-500, z=500)      -->
+        <!-- ============================================================ -->
+        <a-entity id="interior-misc" position="-35 0 0" visible="false">
+            <!-- Floor -->
+            <a-plane geometry="primitive: plane; width: 20; height: 20"
+                     material="color: #b8d4b8; roughness: 0.8"
+                     rotation="-90 0 0" position="0 0.01 0"></a-plane>
+            <!-- Ceiling -->
+            <a-plane geometry="primitive: plane; width: 20; height: 20"
+                     material="color: #e8f5e9; side: double"
+                     rotation="90 0 0" position="0 5 0"></a-plane>
+            <!-- Walls -->
+            <a-box geometry="primitive: box; width: 20; height: 5; depth: 0.3"
+                   material="color: #c8e6c9" position="0 2.5 -10"></a-box>
+            <a-box geometry="primitive: box; width: 20; height: 5; depth: 0.3"
+                   material="color: #c8e6c9" position="0 2.5 10"></a-box>
+            <a-box geometry="primitive: box; width: 0.3; height: 5; depth: 20"
+                   material="color: #a5d6a7" position="-10 2.5 0"></a-box>
+            <a-box geometry="primitive: box; width: 0.3; height: 5; depth: 20"
+                   material="color: #a5d6a7" position="10 2.5 0"></a-box>
+            <!-- Interior lights -->
+            <a-light type="point" intensity="0.8" distance="25" color="#ffffff" position="0 4.5 0"></a-light>
+            <a-light type="point" intensity="0.4" distance="15" color="#ffffff" position="-5 4.5 -5"></a-light>
+            <a-light type="point" intensity="0.4" distance="15" color="#ffffff" position="5 4.5 5"></a-light>
+            <!-- Store title -->
+            <a-text value="MISCELLANEOUS" position="0 4 -9.8" align="center"
+                    color="#2e7d32" scale="2.5 2.5 2.5"></a-text>
+
+            <!-- Shelf units -->
+            <a-box geometry="primitive: box; width: 6; height: 2.5; depth: 0.5"
+                   material="color: #aaa" position="-5 1.25 -9"></a-box>
+            <a-box geometry="primitive: box; width: 6; height: 2.5; depth: 0.5"
+                   material="color: #aaa" position="5 1.25 -9"></a-box>
+
+            <!-- Products -->
+            <!-- Laptop -->
+            <a-box class="product clickable"
+                   data-product="Laptop" data-price="999"
+                   data-description="High-performance laptop with 16GB RAM, 512GB SSD"
+                   geometry="primitive: box; width: 1; height: 0.08; depth: 0.7"
+                   material="color: #c0c0c0"
+                   position="-6 2 -8.5">
+                <a-text value="Laptop\n$999" position="0 0.1 0" align="center" color="#333" scale="0.5 0.5 0.5"></a-text>
+            </a-box>
+
+            <!-- Smartphone -->
+            <a-box class="product clickable"
+                   data-product="Smartphone" data-price="699"
+                   data-description="Latest smartphone with 6.5 inch OLED display"
+                   geometry="primitive: box; width: 0.3; height: 0.6; depth: 0.08"
+                   material="color: #1a1a2e"
+                   position="-4.5 2 -8.5">
+                <a-text value="Phone\n$699" position="0 0.4 0.1" align="center" color="#00ff64" scale="0.4 0.4 0.4"></a-text>
+            </a-box>
+
+            <!-- Watch -->
+            <a-cylinder class="product clickable"
+                        data-product="Smart Watch" data-price="299"
+                        data-description="Fitness tracking smartwatch with heart rate monitor"
+                        geometry="primitive: cylinder; radius: 0.2; height: 0.1"
                         material="color: #333"
-                        position="-2 2 -2"
-                        shadow="cast: true">
-                <a-text value="VR" position="0 0.5 0.8" align="center" color="#00ffff" scale="1 1 1"></a-text>
+                        position="4 2 -8.5">
+                <a-text value="Watch $299" position="0 0.1 0.3" align="center" color="#00ff64" scale="0.4 0.4 0.4"></a-text>
             </a-cylinder>
-            
-            <a-box class="product"
-                   data-product="Drone"
-                   data-price="2499"
-                   data-description="Professional 8K camera drone"
-                   geometry="primitive: box; width: 1.5; height: 0.5; depth: 1.5"
-                   material="color: #444"
-                   position="1 2 -2"
-                   shadow="cast: true">
-                <a-text value="DRONE" position="0.75 0.3 0" align="center" color="#00ff00" scale="0.8 0.8 0.8"></a-text>
-            </a-box>
-            
-            <a-sphere class="product"
-                      data-product="Smart Speaker"
-                      data-price="199"
-                      data-description="AI-powered smart home speaker"
-                      geometry="primitive: sphere; radius: 0.5"
-                      material="color: #555"
-                      position="-2 1.5 0"
-                      shadow="cast: true">
-                <a-text value="SPEAKER" position="0 0 0.6" align="center" color="#ffff00" scale="0.8 0.8 0.8"></a-text>
-            </a-sphere>
-            
-            <!-- Staff NPC -->
-            <a-entity id="staff-4" position="2 0 2">
-                <a-box geometry="primitive: box; width: 0.6; height: 1.8; depth: 0.6"
-                       material="color: #00ff99">
-                </a-box>
-                <a-sphere geometry="primitive: sphere; radius: 0.4"
-                          material="color: #ffdbac"
-                          position="0 1 0">
-                </a-sphere>
-                <a-text value="Staff: Alex" position="0 1.6 0" align="center" color="#000" scale="0.8 0.8 0.8"></a-text>
-                <a-text value="Click to chat" position="0 -1 0" align="center" color="#00ff64" scale="0.6 0.6 0.6"></a-text>
+
+            <!-- Headphones -->
+            <a-entity class="product clickable" data-product="Headphones" data-price="199"
+                      data-description="Noise-cancelling wireless headphones with 30hr battery"
+                      position="5.5 2 -8.5">
+                <a-torus geometry="primitive: torus; radius: 0.25; radiusTubular: 0.05"
+                         material="color: #1a1a1a" rotation="90 0 0"></a-torus>
+                <a-text value="Headphones\n$199" position="0 0.4 0" align="center" color="#333" scale="0.4 0.4 0.4"></a-text>
             </a-entity>
-        </a-entity>
-        
-        <!-- ============= AVAILABLE LAND FOR PURCHASE ============= -->
-        
-        <!-- Land Plot 1 -->
-        <a-entity id="land-1" position="20 0 -20">
-            <a-plane geometry="primitive: plane; width: 8; height: 8"
-                     material="color: #4a7a4a; transparent: true; opacity: 0.6; wireframe: true; wireframeLinewidth: 2"
-                     rotation="-90 0 0"
-                     position="0 0.02 0"
-                     class="land-plot"
-                     data-land="Land Plot 1"
-                     data-price="50000">
-            </a-plane>
-            <a-text value="LAND FOR SALE - $50K" 
-                    position="0 1 0"
-                    align="center"
-                    color="#ffff00"
-                    scale="1.5 1.5 1.5">
-            </a-text>
-            <a-text value="Click to purchase" 
-                    position="0 0.3 0"
-                    align="center"
-                    color="#00ff64"
-                    scale="1 1 1">
-            </a-text>
-        </a-entity>
-        
-        <!-- Land Plot 2 -->
-        <a-entity id="land-2" position="-20 0 20">
-            <a-plane geometry="primitive: plane; width: 8; height: 8"
-                     material="color: #4a7a4a; transparent: true; opacity: 0.6; wireframe: true; wireframeLinewidth: 2"
-                     rotation="-90 0 0"
-                     position="0 0.02 0"
-                     class="land-plot"
-                     data-land="Land Plot 2"
-                     data-price="50000">
-            </a-plane>
-            <a-text value="LAND FOR SALE - $50K" 
-                    position="0 1 0"
-                    align="center"
-                    color="#ffff00"
-                    scale="1.5 1.5 1.5">
-            </a-text>
-            <a-text value="Click to purchase" 
-                    position="0 0.3 0"
-                    align="center"
-                    color="#00ff64"
-                    scale="1 1 1">
-            </a-text>
-        </a-entity>
-        
-        <!-- ============= DIRECTIONAL SIGNS ============= -->
-        
-        <!-- Center marker -->
-        <a-entity position="0 0.5 0">
-            <a-cylinder geometry="primitive: cylinder; radius: 0.3; height: 0.3"
-                        material="color: #ffff00"
-                        shadow="cast: true">
+
+            <!-- Camera -->
+            <a-box class="product clickable"
+                   data-product="Camera" data-price="1200"
+                   data-description="Mirrorless digital camera with 4K video recording"
+                   geometry="primitive: box; width: 0.5; height: 0.4; depth: 0.4"
+                   material="color: #222"
+                   position="-3 1 -8.5">
+                <a-cylinder geometry="primitive: cylinder; radius: 0.15; height: 0.2" material="color: #111" position="0.1 0 -0.3" rotation="90 0 0"></a-cylinder>
+                <a-text value="Camera\n$1200" position="0 0.4 0" align="center" color="#ff4444" scale="0.4 0.4 0.4"></a-text>
+            </a-box>
+
+            <!-- Center display tables -->
+            <a-box geometry="primitive: box; width: 3; height: 0.8; depth: 2"
+                   material="color: #bbb" position="-3 0.4 3"></a-box>
+            <!-- Bluetooth Speaker -->
+            <a-cylinder class="product clickable"
+                        data-product="Bluetooth Speaker" data-price="79"
+                        data-description="Portable waterproof bluetooth speaker"
+                        geometry="primitive: cylinder; radius: 0.3; height: 0.5"
+                        material="color: #2196F3"
+                        position="-3 1 3">
+                <a-text value="Speaker $79" position="0 0.4 0.4" align="center" color="#fff" scale="0.4 0.4 0.4"></a-text>
             </a-cylinder>
-            <a-text value="MARKETPLACE CENTER" 
-                    position="0 1 0"
-                    align="center"
-                    color="#ffff00"
-                    scale="2 2 2"
-                    material="emissive: #00ff64">
-            </a-text>
+
+            <a-box geometry="primitive: box; width: 3; height: 0.8; depth: 2"
+                   material="color: #bbb" position="3 0.4 3"></a-box>
+            <!-- Backpack -->
+            <a-box class="product clickable"
+                   data-product="Backpack" data-price="65"
+                   data-description="Water-resistant travel backpack with laptop compartment"
+                   geometry="primitive: box; width: 0.5; height: 0.7; depth: 0.3"
+                   material="color: #4a4a4a"
+                   position="3 1.2 3">
+                <a-text value="Backpack\n$65" position="0 0.5 0.2" align="center" color="#fff" scale="0.4 0.4 0.4"></a-text>
+            </a-box>
+
+            <!-- Board Games on a shelf -->
+            <a-box geometry="primitive: box; width: 4; height: 1.5; depth: 0.5"
+                   material="color: #aaa" position="8 0.75 0"></a-box>
+            <a-box class="product clickable"
+                   data-product="Board Game Set" data-price="40"
+                   data-description="Classic board game collection - Chess, Checkers, and more"
+                   geometry="primitive: box; width: 0.8; height: 0.2; depth: 0.8"
+                   material="color: #8B4513"
+                   position="8 1.6 0">
+                <a-text value="Games $40" position="0 0.2 0" align="center" color="#fff" scale="0.4 0.4 0.4"></a-text>
+            </a-box>
+
+            <!-- Staff NPC -->
+            <a-entity id="staff-misc" position="5 0 -4">
+                <a-box geometry="primitive: box; width: 0.6; height: 1.6; depth: 0.4" material="color: #2a8a4a" position="0 0.8 0"></a-box>
+                <a-sphere geometry="primitive: sphere; radius: 0.3" material="color: #ffdbac" position="0 1.8 0"></a-sphere>
+                <a-text value="Staff: Lisa" position="0 2.3 0" align="center" color="#333" scale="0.7 0.7 0.7"></a-text>
+            </a-entity>
+
+            <!-- EXIT DOOR -->
+            <a-box class="exit-door clickable" data-building="misc"
+                   geometry="primitive: box; width: 2; height: 3.5; depth: 0.4"
+                   material="color: #cc0000; emissive: #880000; emissiveIntensity: 0.3"
+                   position="0 1.75 9.8">
+                <a-text value="EXIT" position="0 0 0.25" align="center" color="#fff" scale="1.5 1.5 1.5"></a-text>
+            </a-box>
         </a-entity>
-        
-        <!-- Navigation signs -->
-        <a-text value="↑ Electronics (0, 0, -50)" position="0 3 -30" align="center" color="#ff6b35" scale="1.5 1.5 1.5"></a-text>
-        <a-text value="↓ Tech Gadgets (0, 0, 50)" position="0 3 30" align="center" color="#00ccff" scale="1.5 1.5 1.5"></a-text>
-        <a-text value="← Fashion (0, 0, 0)" position="-25 3 0" align="center" color="#c744ff" scale="1.5 1.5 1.5"></a-text>
-        <a-text value="Food Court →" position="25 3 0" align="center" color="#ffa500" scale="1.5 1.5 1.5"></a-text>
+
     </a-scene>
-    
-    <!-- UI Panels -->
+
+    <!-- Location badge -->
+    <div id="location-badge">Marketplace Plaza</div>
+
+    <!-- UI Panel -->
     <div id="ui-panel">
-        <h3>Virtual Marketplace</h3>
+        <h3>Pixel Marketplace</h3>
         <div class="info-text"><strong>Controls:</strong></div>
         <div class="info-text">• WASD: Move</div>
         <div class="info-text">• Mouse: Look around</div>
-        <div class="info-text">• Click: Interact</div>
+        <div class="info-text">• Click: Interact / Enter / Exit</div>
         <hr>
         <div class="info-text"><strong>Balance: $<span id="balance">100000</span></strong></div>
-        <div class="info-text"><strong>You Own: <span id="owned-land">0</span> plots</strong></div>
         <hr>
-        <div class="info-text">📍 Explore stalls • Buy products • Purchase land • Chat with staff</div>
+        <div class="info-text">Walk to a building and click the door to enter. Click EXIT to leave.</div>
     </div>
-    
+
     <div id="inventory">
-        <h4>📦 Inventory</h4>
+        <h4>Inventory</h4>
         <div id="inventory-list">
             <div class="inventory-item">Empty - Start shopping!</div>
         </div>
         <button style="width: 100%; margin-top: 10px;" onclick="sellInventory()">Sell All ($<span id="sell-price">0</span>)</button>
     </div>
-    
-    <!-- Modal for product/land details -->
+
+    <!-- Exit building button (shown when inside) -->
+    <div id="exit-btn" onclick="exitBuilding()">Exit Building</div>
+
+    <!-- Modal -->
     <div id="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -610,191 +1030,199 @@
             </div>
         </div>
     </div>
-    
+
     <script>
-        // Game state
+        /* ===== Game State ===== */
         const gameState = {
             balance: 100000,
             inventory: {},
-            ownedLand: [],
-            currentModal: null
+            currentModal: null,
+            currentLocation: 'outdoor' // 'outdoor' | 'clothing' | 'furniture' | 'vehicle' | 'misc'
         };
-        
-        // Initialize the marketplace
+
+        /* ===== Building positions (indoor spawn points) ===== */
+        const MARKETPLACE_CENTER = '0 2 15';
+        const buildingInteriors = {
+            clothing:  { interior: '0 2 -30',  id: 'interior-clothing',  entrance: { x: 0,     z: -28.9 } },
+            furniture: { interior: '30 2 0',   id: 'interior-furniture', entrance: { x: 28.9,  z: 0     } },
+            vehicle:   { interior: '0 2 40',   id: 'interior-vehicle',   entrance: { x: 0,     z: 27.9  } },
+            misc:      { interior: '-30 2 0',  id: 'interior-misc',      entrance: { x: -28.9, z: 0     } }
+        };
+        const ENTER_RADIUS = 4; // how close the player must walk to auto-enter
+
+        const buildingNames = {
+            outdoor:   'Marketplace Plaza',
+            clothing:  'Clothing Store',
+            furniture: 'Furniture Store',
+            vehicle:   'Vehicle Showroom',
+            misc:      'Miscellaneous Store'
+        };
+
+        /* ===== Initialization ===== */
         function init() {
-            // Add raycaster for click detection
-            const camera = document.querySelector('[camera]');
             const scene = document.querySelector('a-scene');
-            
-            // Wait for scene to load
-            scene.addEventListener('loaded', function() {
-                addInteractions();
-            });
-            
-            if (scene.hasLoaded) {
-                addInteractions();
-            }
-            
-            updateUI();
+            function setup() { addInteractions(); updateUI(); startProximityCheck(); }
+            scene.addEventListener('loaded', setup);
+            if (scene.hasLoaded) setup();
         }
-        
+
+        /* ===== Wire up click interactions ===== */
         function addInteractions() {
+            // Exit doors
+            document.querySelectorAll('.exit-door').forEach(el => {
+                el.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    exitBuilding();
+                });
+            });
+
             // Products
-            const products = document.querySelectorAll('.product');
-            products.forEach(product => {
-                product.addEventListener('click', function(e) {
+            document.querySelectorAll('.product').forEach(el => {
+                el.addEventListener('click', function (e) {
                     e.stopPropagation();
                     showProductModal(this);
                 });
-                product.style.cursor = 'pointer';
             });
-            
-            // Land plots
-            const lands = document.querySelectorAll('.land-plot');
-            lands.forEach(land => {
-                land.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    showLandModal(this);
-                });
-                land.style.cursor = 'pointer';
-            });
-            
-            // Staff members
-            const staffMembers = document.querySelectorAll('[id^="staff-"]');
-            staffMembers.forEach(staff => {
-                staff.addEventListener('click', function(e) {
+
+            // Staff
+            document.querySelectorAll('[id^="staff-"]').forEach(el => {
+                el.addEventListener('click', function (e) {
                     e.stopPropagation();
                     chatWithStaff(this);
                 });
-                staff.style.cursor = 'pointer';
             });
         }
-        
-        function showProductModal(element) {
-            const product = element.dataset.product;
-            const price = element.dataset.price;
-            const description = element.dataset.description;
-            
-            gameState.currentModal = {
-                type: 'product',
-                product: product,
-                price: parseInt(price)
-            };
-            
+
+        /* ===== Proximity-based entrance detection ===== */
+        function startProximityCheck() {
+            setInterval(function () {
+                if (gameState.currentLocation !== 'outdoor') return;
+                const rig = document.getElementById('camera-rig');
+                const pos = rig.getAttribute('position');
+                for (const [name, info] of Object.entries(buildingInteriors)) {
+                    const dx = pos.x - info.entrance.x;
+                    const dz = pos.z - info.entrance.z;
+                    const dist = Math.sqrt(dx * dx + dz * dz);
+                    if (dist < ENTER_RADIUS) {
+                        enterBuilding(name);
+                        return;
+                    }
+                }
+            }, 250); // check 4 times per second
+        }
+
+        /* ===== Enter / Exit Buildings ===== */
+        function enterBuilding(name) {
+            const info = buildingInteriors[name];
+            if (!info) return;
+            // Hide outdoor world, show this interior
+            document.getElementById('outdoor-world').setAttribute('visible', 'false');
+            document.getElementById(info.id).setAttribute('visible', 'true');
+            // Move camera inside
+            const rig = document.getElementById('camera-rig');
+            rig.setAttribute('position', info.interior);
+            gameState.currentLocation = name;
+            document.getElementById('location-badge').textContent = buildingNames[name];
+            document.getElementById('exit-btn').style.display = 'block';
+        }
+
+        function exitBuilding() {
+            if (gameState.currentLocation === 'outdoor') return;
+            const info = buildingInteriors[gameState.currentLocation];
+            // Hide interior, show outdoor world
+            if (info) document.getElementById(info.id).setAttribute('visible', 'false');
+            document.getElementById('outdoor-world').setAttribute('visible', 'true');
+            // Return to marketplace center
+            const rig = document.getElementById('camera-rig');
+            rig.setAttribute('position', MARKETPLACE_CENTER);
+            gameState.currentLocation = 'outdoor';
+            document.getElementById('location-badge').textContent = buildingNames.outdoor;
+            document.getElementById('exit-btn').style.display = 'none';
+        }
+
+        /* ===== Product Modal ===== */
+        function showProductModal(el) {
+            const product = el.dataset.product;
+            const price = el.dataset.price;
+            const description = el.dataset.description;
+            if (!product) return; // safety for nested clicks
+            gameState.currentModal = { type: 'product', product, price: parseInt(price) };
             document.getElementById('modal-title').textContent = product;
             document.getElementById('modal-description').textContent = description;
-            document.getElementById('modal-price').textContent = `Price: $${price}`;
+            document.getElementById('modal-price').textContent = 'Price: $' + parseInt(price).toLocaleString();
             document.getElementById('modal').style.display = 'block';
         }
-        
-        function showLandModal(element) {
-            const land = element.dataset.land;
-            const price = element.dataset.price;
-            
-            gameState.currentModal = {
-                type: 'land',
-                land: land,
-                price: parseInt(price)
-            };
-            
-            document.getElementById('modal-title').textContent = land;
-            document.getElementById('modal-description').textContent = 'Premium marketplace land. Perfect for setting up your store!';
-            document.getElementById('modal-price').textContent = `Price: $${price}`;
-            document.getElementById('modal').style.display = 'block';
-        }
-        
+
         function purchaseItem() {
             const modal = gameState.currentModal;
-            
             if (!modal) return;
-            
             if (gameState.balance < modal.price) {
-                alert('Insufficient balance! You need $' + (modal.price - gameState.balance) + ' more.');
+                alert('Insufficient balance! You need $' + (modal.price - gameState.balance).toLocaleString() + ' more.');
                 return;
             }
-            
             gameState.balance -= modal.price;
-            
             if (modal.type === 'product') {
-                const product = modal.product;
-                gameState.inventory[product] = (gameState.inventory[product] || 0) + 1;
-                alert('✓ Purchased ' + product + ' for $' + modal.price);
-            } else if (modal.type === 'land') {
-                gameState.ownedLand.push(modal.land);
-                alert('✓ Land purchase successful! You now own land in the marketplace. Congratulations! 🎉');
+                gameState.inventory[modal.product] = (gameState.inventory[modal.product] || 0) + 1;
+                alert('Purchased ' + modal.product + ' for $' + modal.price.toLocaleString());
             }
-            
             updateUI();
             closeModal();
         }
-        
-        function chatWithStaff(element) {
-            const staffName = element.querySelector('a-text').getAttribute('value');
-            const messages = [
-                `Hello! Welcome to our store. We have great deals today!`,
-                `Looking for something specific? I can help you find it.`,
-                `Our products are high quality and customer-approved!`,
-                `Would you like to know more about our latest arrivals?`,
-                `Have you considered becoming a seller here?`
+
+        /* ===== Staff Chat ===== */
+        function chatWithStaff(el) {
+            const nameEl = el.querySelector('a-text');
+            if (!nameEl) return;
+            const staffName = nameEl.getAttribute('value');
+            const msgs = [
+                'Welcome! Let me know if you need help finding anything.',
+                'We have new arrivals this week — take a look around!',
+                'Everything you see is in stock and ready to go.',
+                'Need a recommendation? I know every item here.',
+                'Great choice coming in today. Happy shopping!'
             ];
-            
-            const message = messages[Math.floor(Math.random() * messages.length)];
-            alert(`${staffName}: "${message}"`);
+            alert(staffName + ': "' + msgs[Math.floor(Math.random() * msgs.length)] + '"');
         }
-        
+
+        /* ===== UI ===== */
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
             gameState.currentModal = null;
         }
-        
+
         function updateUI() {
             document.getElementById('balance').textContent = gameState.balance.toLocaleString();
-            document.getElementById('owned-land').textContent = gameState.ownedLand.length;
-            
-            // Update inventory display
-            const inventoryList = document.getElementById('inventory-list');
-            if (Object.keys(gameState.inventory).length === 0) {
-                inventoryList.innerHTML = '<div class="inventory-item">Empty - Start shopping!</div>';
+            const list = document.getElementById('inventory-list');
+            const items = Object.entries(gameState.inventory);
+            if (items.length === 0) {
+                list.innerHTML = '<div class="inventory-item">Empty - Start shopping!</div>';
                 document.getElementById('sell-price').textContent = '0';
             } else {
-                let html = '';
-                let totalValue = 0;
-                for (const [item, count] of Object.entries(gameState.inventory)) {
-                    html += `<div class="inventory-item">${item} x${count}</div>`;
-                    // Estimate value (sell for 70% of purchase)
-                    totalValue += count * 100; // rough estimate
-                }
-                inventoryList.innerHTML = html;
-                document.getElementById('sell-price').textContent = totalValue;
+                let html = '', total = 0;
+                items.forEach(([item, count]) => {
+                    html += '<div class="inventory-item">' + item + ' x' + count + '</div>';
+                    total += count * 50; // resale value
+                });
+                list.innerHTML = html;
+                document.getElementById('sell-price').textContent = total.toLocaleString();
             }
         }
-        
+
         function sellInventory() {
             let total = 0;
-            for (const [item, count] of Object.entries(gameState.inventory)) {
-                total += count * 100; // rough estimate
-            }
-            
-            if (total === 0) {
-                alert('Your inventory is empty!');
-                return;
-            }
-            
+            Object.values(gameState.inventory).forEach(c => { total += c * 50; });
+            if (total === 0) { alert('Your inventory is empty!'); return; }
             gameState.balance += total;
             gameState.inventory = {};
-            alert('✓ Sold all items for $' + total);
+            alert('Sold all items for $' + total.toLocaleString());
             updateUI();
         }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('modal');
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-        
-        // Initialize on page load
+
+        /* ===== Misc ===== */
+        window.onclick = function (e) {
+            if (e.target === document.getElementById('modal')) closeModal();
+        };
+
         window.addEventListener('load', init);
     </script>
 </body>
